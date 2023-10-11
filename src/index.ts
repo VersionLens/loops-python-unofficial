@@ -217,4 +217,15 @@ export default class LoopsClient {
       payload
     })
   }
+
+  /**
+   * Get custom fields/properties.
+   * 
+   * @returns List of custom fields (JSON)
+   */
+  async getCustomFields(): Promise<Record<string, string>[]> {
+    return this._makeQuery({
+      path: 'v1/contacts/customFields'
+    })
+  }
 }
