@@ -5,14 +5,25 @@ interface QueryOptions {
   params?: Record<string, string>;
 }
 
-interface ContactResponse {
-  success: boolean;
+interface ContactSuccessResponse {
+  success: true;
   id: string;
 }
 
+interface DeleteSuccessResponse {
+  success: true;
+  message: "Contact deleted.";
+}
+
 interface ErrorResponse {
-  success: boolean;
+  success: false;
   message: string;
+}
+
+type Contact = Record<string, any>;
+
+interface EventResponse {
+  success: boolean;
 }
 
 
@@ -66,7 +77,7 @@ export default class LoopsClient {
    * 
    * @returns {Object} Contact record or error response (JSON)
    */
-  async createContact(email: string, properties?: Record<string, any>): Promise<ContactResponse | ErrorResponse> {
+  async createContact(email: string, properties?: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
     const payload = { email, ...properties }
     return this._makeQuery({
       path: 'v1/contacts/create',
@@ -85,7 +96,7 @@ export default class LoopsClient {
    * 
    * @returns {Object} Contact record or error response (JSON)
    */
-  async updateContact(email: string, properties?: Record<string, any>): Promise<ContactResponse | ErrorResponse> {
+  async updateContact(email: string, properties?: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
     const payload = { email, ...properties }
     return this._makeQuery({
       path: 'v1/contacts/update',
@@ -103,7 +114,7 @@ export default class LoopsClient {
    * 
    * @returns {Object} List of contact records (JSON)
    */
-  async findContact(email: string): Promise<Record<string, any>[]> {
+  async findContact(email: string): Promise<Contact[]> {
     return this._makeQuery({
       path: 'v1/contacts/find',
       params: { email }
@@ -121,7 +132,7 @@ export default class LoopsClient {
    * 
    * @returns {Object} Confirmation or error response (JSON)
    */
-  async deleteContact({ email, userId }: { email?: string, userId?: string }): Promise<ErrorResponse> {
+  async deleteContact({ email, userId }: { email?: string, userId?: string }): Promise<DeleteSuccessResponse | ErrorResponse> {
     const payload: {email?: string, userId?: string} = {}
     if (email) payload['email'] = email
     else if (userId) payload['userId'] = userId
@@ -142,9 +153,9 @@ export default class LoopsClient {
    * 
    * @see https://loops.so/docs/add-users/api-reference#send
    * 
-   * @returns {Object} Event record (JSON)
+   * @returns {Object} Response (JSON)
    */
-  async sendEvent(email: string, eventName: string, properties?: Record<string, any>): Promise<Record<string, any>[]> {
+  async sendEvent(email: string, eventName: string, properties?: Record<string, any>): Promise<EventResponse> {
     const payload = { email, eventName, ...properties }
     return this._makeQuery({
       path: 'v1/events/send',
