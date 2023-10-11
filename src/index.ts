@@ -1,7 +1,7 @@
 interface QueryOptions {
   path: `v1/${string}`;
   method?: "GET" | "POST" | "PUT";
-  payload?: Record<string, string>;
+  payload?: Record<string, any>;
   params?: Record<string, string>;
 }
 
@@ -210,7 +210,12 @@ export default class LoopsClient {
     email: string,
     dataVariables?: Record<string, string | number>
   ): Promise<TransactionalResponse> {
-    const payload = { transactionalId, email, ...dataVariables }
+    const payload: {
+      transactionalId: string,
+      email: string,
+      dataVariables?: Record<string, string | number>
+    } = { transactionalId, email }
+    if (dataVariables) payload['dataVariables'] = dataVariables
     return this._makeQuery({
       path: 'v1/transactional',
       method: 'POST',
