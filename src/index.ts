@@ -26,6 +26,27 @@ interface EventResponse {
   success: boolean;
 }
 
+interface TransactionalSuccess {
+  success: true;
+}
+
+interface TransactionalError {
+  success: false;
+  path: string;
+  message: string;
+}
+
+interface TransactionalNestedError {
+  success: false;
+  error: {
+    path: string;
+    message: string;
+  };
+  transactionalId?: string;
+}
+
+type TransactionalResponse = TransactionalSuccess | TransactionalError | TransactionalNestedError;
+
 
 export default class LoopsClient {
 
@@ -132,7 +153,9 @@ export default class LoopsClient {
    * 
    * @returns {Object} Confirmation or error response (JSON)
    */
-  async deleteContact({ email, userId }: { email?: string, userId?: string }): Promise<DeleteSuccessResponse | ErrorResponse> {
+  async deleteContact(
+    { email, userId }: { email?: string, userId?: string }
+  ): Promise<DeleteSuccessResponse | ErrorResponse> {
     const payload: {email?: string, userId?: string} = {}
     if (email) payload['email'] = email
     else if (userId) payload['userId'] = userId
@@ -159,6 +182,28 @@ export default class LoopsClient {
     const payload = { email, eventName, ...properties }
     return this._makeQuery({
       path: 'v1/events/send',
+      method: 'POST',
+      payload
+    })
+  }
+
+  /**
+   * Send a transactional email.
+   * 
+   * @param {string} transactionalId The ID of the transactional email to send.
+   * @param {string} email The email address of the recipient.
+   * @param {Object} [dataVariables] Data variables as defined by the transational email template.
+   * 
+   * @returns {Object} Confirmation or error response (JSON)
+   */
+  async sendTransactionalEmail(
+    transactionalId: string,
+    email: string,
+    dataVariables?: Record<string, string | number>
+  ): Promise<TransactionalResponse> {
+    const payload = { transactionalId, email, ...dataVariables }
+    return this._makeQuery({
+      path: 'v1/transactional',
       method: 'POST',
       payload
     })
