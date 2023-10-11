@@ -20,7 +20,16 @@ interface ErrorResponse {
   message: string;
 }
 
-type Contact = Record<string, any>;
+type Contact = {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  source: string;
+  subscribed: boolean;
+  userGroup: string;
+  userId: string | null;
+} & Record<string, any>;
 
 interface EventResponse {
   success: boolean;
