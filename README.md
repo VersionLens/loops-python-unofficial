@@ -1,6 +1,6 @@
 # Loops JavaScript/TypeScript SDK
 
-## Introduction
+## Introduction
 
 This is the official Javascript SDK for [Loops](https://loops.so), with full TypeScript support.
 
@@ -14,7 +14,7 @@ You can install the package from npm:
 npm install @loops/loops
 ```
 
-You will need a Loops API key to be able to use this package.
+You will need a Loops API key to use the package.
 
 In your Loops account, go to [Settings > API](https://app.loops.so/settings?page=api) and click "Generate key".
 
@@ -27,7 +27,7 @@ import LoopsClient from '@loops/loops'
 
 const loops = new LoopsClient(process.env.LOOPS_API_KEY)
 
-const data = await loops.createContact('email@provider.com')
+const resp = await loops.createContact('email@provider.com')
 ```
 
 ## Tip
@@ -50,7 +50,7 @@ Create a new contact.
 
 [API Reference](https://loops.so/docs/api#add).
 
-#### Params
+#### Parameters
 
 | Name         | Type   | Required | Notes |
 |--------------|--------|----------|-------|
@@ -60,13 +60,13 @@ Create a new contact.
 #### Examples
 
 ```javascript
-const resp = loops.createContact('hello@gmail.com')
+const resp = await loops.createContact('hello@gmail.com')
 
 const contactProperties = {
   'firstName': 'Bob', // Default property
   'favoriteColor': 'Red' // Custom property
 }
-const resp = loops.createContact('hello@gmail.com', contactProperties)
+const resp = await loops.createContact('hello@gmail.com', contactProperties)
 ```
 
 #### Response
@@ -93,7 +93,7 @@ Update a contact.
 
 [API Reference](https://loops.so/docs/api#update).
 
-#### Params
+#### Parameters
 
 | Name         | Type   | Required | Notes |
 |--------------|--------|----------|-------|
@@ -107,7 +107,7 @@ const contactProperties = {
   'firstName': 'Bob', // Default property
   'favoriteColor': 'Blue' // Custom property
 }
-const resp = loops.updateContact('hello@gmail.com', contactProperties)
+const resp = await loops.updateContact('hello@gmail.com', contactProperties)
 ```
 
 #### Response
@@ -134,7 +134,7 @@ Find a contact by email address.
 
 [API Reference](https://loops.so/docs/api#find).
 
-#### Params
+#### Parameters
 
 | Name    | Type   | Required | Notes |
 |---------|--------|----------|-------|
@@ -143,25 +143,25 @@ Find a contact by email address.
 #### Example
 
 ```javascript
-const resp = loops.findContact('hello@gmail.com')
+const resp = await loops.findContact('hello@gmail.com')
 ```
 
 #### Response
 
-This method will return a list of contact objects. If no contact is found, an empty list will be returned.
+This method will return a list of contact objects containing all default properties and any custom properties. If no contact is found, an empty list will be returned.
 
 ```json
 [
   {
     "id": "cll6b3i8901a9jx0oyktl2m4u",
     "email": "hello@gmail.com",
-    "firstName": null,
+    "firstName": "Bob",
     "lastName": null,
     "source": "API",
     "subscribed": true,
     "userGroup": "",
     "userId": null,
-    "favoriteColor": "Blue"
+    "favoriteColor": "Blue" // Custom property
   }
 ]
 ```
@@ -172,7 +172,7 @@ Delete a contact, either by email address or user ID.
 
 [API Reference](https://loops.so/docs/api#delete).
 
-#### Params
+#### Parameters
 
 | Name     | Type   | Required | Notes |
 |----------|--------|----------|-------|
@@ -182,7 +182,7 @@ Delete a contact, either by email address or user ID.
 #### Example
 
 ```javascript
-const resp = loops.deleteContact({ email: 'hello@gmail.com' })
+const resp = await loops.deleteContact({ email: 'hello@gmail.com' })
 ```
 
 #### Response
@@ -209,7 +209,7 @@ Send an event.
 
 [API Reference](https://loops.so/docs/api#send-event).
 
-#### Params
+#### Parameters
 
 | Name         | Type   | Required | Notes |
 |--------------|--------|----------|-------|
@@ -220,12 +220,12 @@ Send an event.
 #### Examples
 
 ```javascript
-const resp = loops.sendEvent('hello@gmail.com', 'signup')
+const resp = await loops.sendEvent('hello@gmail.com', 'signup')
 
 const contactProperties = {
   'plan': 'pro'
 }
-const resp = loops.sendEvent('hello@gmail.com', 'signup', contactProperties)
+const resp = await loops.sendEvent('hello@gmail.com', 'signup', contactProperties)
 ```
 
 #### Response
@@ -250,7 +250,7 @@ Send a transaction email.
 
 [API Reference](https://loops.so/docs/api#send-transactional-email).
 
-#### Params
+#### Parameters
 
 | Name              | Type   | Required | Notes |
 |-------------------|--------|----------|-------|
@@ -264,7 +264,7 @@ Send a transaction email.
 const dataVariables = {
   "loginUrl": "https://myapp.com/login/"
 }
-const resp = loops.sendTransactionalEmail('clfq6dinn000yl70fgwwyp82l', 'hello@gmail.com', dataVariables)
+const resp = await loops.sendTransactionalEmail('clfq6dinn000yl70fgwwyp82l', 'hello@gmail.com', dataVariables)
 ```
 
 #### Response
@@ -277,7 +277,7 @@ This method will return a success or error message.
 }
 ```
 
-If there is an error, a descriptive error message will be returned:
+If there is a problem with the request, a descriptive error message will be returned:
 
 ```json
 {
@@ -302,19 +302,19 @@ If there is an error, a descriptive error message will be returned:
 
 Get a list of custom fields.
 
-#### Params
+#### Parameters
 
 None
 
 #### Example
 
 ```javascript
-const resp = loops.getCustomFields()
+const resp = await loops.getCustomFields()
 ```
 
 #### Response
 
-This method will return a list of custom field objects. If there are no custom fields, an empty list will be returned.
+This method will return a list of custom field objects containing `key` and `label` attributes. If there are no custom fields, an empty list will be returned.
 
 ```json
 [
