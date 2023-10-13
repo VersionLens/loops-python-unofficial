@@ -80,10 +80,11 @@ export default class LoopsClient {
     headers.set("Authorization", `Bearer ${this.apiKey}`)
 
     const url = new URL(path, this.apiRoot)
-    if (params && method === "GET")
+    if (params && method === "GET") {
       Object.entries(params).forEach(([key, value]) =>
         url.searchParams.append(key, value)
       )
+    }
 
     try {
       const response = await fetch(url.href, {
@@ -117,16 +118,16 @@ export default class LoopsClient {
   }
 
   /**
-   * Update a contact by email address.
+   * Update a contact.
    * 
    * @param {string} email The email address of the contact.
-   * @param {Object} [properties] All other contact properties, including custom properties.
+   * @param {Object} properties All other contact properties, including custom properties.
    * 
    * @see https://loops.so/docs/add-users/api-reference#update
    * 
    * @returns {Object} Contact record or error response (JSON)
    */
-  async updateContact(email: string, properties?: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
+  async updateContact(email: string, properties: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
     const payload = { email, ...properties }
     return this._makeQuery({
       path: 'v1/contacts/update',
@@ -165,7 +166,7 @@ export default class LoopsClient {
   async deleteContact(
     { email, userId }: { email?: string, userId?: string }
   ): Promise<DeleteSuccessResponse | ErrorResponse> {
-    const payload: {email?: string, userId?: string} = {}
+    const payload: { email?: string, userId?: string } = {}
     if (email) payload['email'] = email
     else if (userId) payload['userId'] = userId
     else throw 'You must provide an `email` or `userId` value.'
