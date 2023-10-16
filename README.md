@@ -102,6 +102,8 @@ This method will return a success or error message:
 
 Update a contact.
 
+Note: To update a contact's email address, the contact requires a `userId` value. Then you can make a request with their `userId` and an updated email address.
+
 [API Reference](https://loops.so/docs/api#update).
 
 #### Parameters
@@ -119,6 +121,9 @@ const contactProperties = {
   "favoriteColor": "Blue" /* Custom property */
 };
 const resp = await loops.updateContact("hello@gmail.com", contactProperties);
+
+/* Updating a contact's email address using userId */
+const resp = await loops.updateContact("newemail@gmail.com", { "userId": "1234" });
 ```
 
 #### Response
