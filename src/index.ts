@@ -59,11 +59,11 @@ type TransactionalResponse = TransactionalSuccess | TransactionalError | Transac
 
 export default class LoopsClient {
 
-  apiKey: string
-  apiRoot = 'https://app.loops.so/api/'
+  apiKey: string;
+  apiRoot = "https://app.loops.so/api/";
 
   constructor(apiKey: string) {
-    this.apiKey = apiKey
+    this.apiKey = apiKey;
   }
 
   /**
@@ -75,15 +75,15 @@ export default class LoopsClient {
    * @param {Object} params.payload Payload for PUT and POST requests
    * @param {Object} params.params URL query parameters
    */
-  private async _makeQuery({ path, method = 'GET', payload, params }: QueryOptions) {
-    const headers = new Headers()
-    headers.set("Authorization", `Bearer ${this.apiKey}`)
+  private async _makeQuery({ path, method = "GET", payload, params }: QueryOptions) {
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${this.apiKey}`);
 
-    const url = new URL(path, this.apiRoot)
+    const url = new URL(path, this.apiRoot);
     if (params && method === "GET") {
       Object.entries(params).forEach(([key, value]) =>
         url.searchParams.append(key, value)
-      )
+      );
     }
 
     try {
@@ -91,10 +91,10 @@ export default class LoopsClient {
         method,
         headers,
         body: payload ? JSON.stringify(payload) : undefined
-      })
-      return await response.json()
+      });
+      return await response.json();
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -109,12 +109,12 @@ export default class LoopsClient {
    * @returns {Object} Contact record or error response (JSON)
    */
   async createContact(email: string, properties?: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
-    const payload = { email, ...properties }
+    const payload = { email, ...properties };
     return this._makeQuery({
-      path: 'v1/contacts/create',
-      method: 'POST',
+      path: "v1/contacts/create",
+      method: "POST",
       payload
-    })
+    });
   }
 
   /**
@@ -128,12 +128,12 @@ export default class LoopsClient {
    * @returns {Object} Contact record or error response (JSON)
    */
   async updateContact(email: string, properties: Record<string, any>): Promise<ContactSuccessResponse | ErrorResponse> {
-    const payload = { email, ...properties }
+    const payload = { email, ...properties };
     return this._makeQuery({
-      path: 'v1/contacts/update',
-      method: 'PUT',
+      path: "v1/contacts/update",
+      method: "PUT",
       payload
-    })
+    });
   }
 
   /**
@@ -147,9 +147,9 @@ export default class LoopsClient {
    */
   async findContact(email: string): Promise<Contact[]> {
     return this._makeQuery({
-      path: 'v1/contacts/find',
+      path: "v1/contacts/find",
       params: { email }
-    })
+    });
   }
 
   /**
@@ -167,14 +167,14 @@ export default class LoopsClient {
     { email, userId }: { email?: string, userId?: string }
   ): Promise<DeleteSuccessResponse | ErrorResponse> {
     const payload: { email?: string, userId?: string } = {}
-    if (email) payload['email'] = email
-    else if (userId) payload['userId'] = userId
-    else throw 'You must provide an `email` or `userId` value.'
+    if (email) payload["email"] = email;
+    else if (userId) payload["userId"] = userId;
+    else throw "You must provide an `email` or `userId` value.";
     return this._makeQuery({
-      path: 'v1/contacts/delete',
-      method: 'POST',
+      path: "v1/contacts/delete",
+      method: "POST",
       payload
-    })
+    });
   }
 
   /**
@@ -189,12 +189,12 @@ export default class LoopsClient {
    * @returns {Object} Response (JSON)
    */
   async sendEvent(email: string, eventName: string, properties?: Record<string, any>): Promise<EventResponse> {
-    const payload = { email, eventName, ...properties }
+    const payload = { email, eventName, ...properties };
     return this._makeQuery({
-      path: 'v1/events/send',
-      method: 'POST',
+      path: "v1/events/send",
+      method: "POST",
       payload
-    })
+    });
   }
 
   /**
@@ -215,13 +215,13 @@ export default class LoopsClient {
       transactionalId: string,
       email: string,
       dataVariables?: Record<string, string | number>
-    } = { transactionalId, email }
-    if (dataVariables) payload['dataVariables'] = dataVariables
+    } = { transactionalId, email };
+    if (dataVariables) payload["dataVariables"] = dataVariables;
     return this._makeQuery({
-      path: 'v1/transactional',
-      method: 'POST',
+      path: "v1/transactional",
+      method: "POST",
       payload
-    })
+    });
   }
 
   /**
@@ -231,7 +231,7 @@ export default class LoopsClient {
    */
   async getCustomFields(): Promise<Record<string, string>[]> {
     return this._makeQuery({
-      path: 'v1/contacts/customFields'
-    })
+      path: "v1/contacts/customFields"
+    });
   }
 }

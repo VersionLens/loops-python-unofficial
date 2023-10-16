@@ -23,16 +23,27 @@ Copy this key and save it in your application code (for example as `LOOPS_API_KE
 ## Usage
 
 ```javascript
-import LoopsClient from '@loops/loops'
+import LoopsClient from "@loops/loops";
 
-const loops = new LoopsClient(process.env.LOOPS_API_KEY)
+const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 
-const resp = await loops.createContact('email@provider.com')
+const resp = await loops.createContact("email@provider.com");
 ```
 
-## Tip
+## Default contact properties
 
-You can create a new contact when [sending events](#sendevent) and [transactional emails](#sendtransactionalemail). If the email address you provide doesn't exist as a contact, the contact will be created at the same time the event or transactional email is sent.
+Each contact in Loops has a set of default properties. These will always be returned in API results.
+
+- `id`
+- `email`
+- `firstName`
+- `lastName`
+- `notes`
+- `subscribed`
+- `userGroup`
+- `userId`
+
+You are able to add custom properties to your contacts when using the API (explained in each method below). Any custom properties will be added to contact objects in API responses.
 
 ## Methods
 
@@ -60,13 +71,13 @@ Create a new contact.
 #### Examples
 
 ```javascript
-const resp = await loops.createContact('hello@gmail.com')
+const resp = await loops.createContact("hello@gmail.com");
 
 const contactProperties = {
-  'firstName': 'Bob', // Default property
-  'favoriteColor': 'Red' // Custom property
+  "firstName": "Bob", /* Default property */
+  "favoriteColor": "Red" /* Custom property */
 }
-const resp = await loops.createContact('hello@gmail.com', contactProperties)
+const resp = await loops.createContact("hello@gmail.com", contactProperties);
 ```
 
 #### Response
@@ -104,10 +115,10 @@ Update a contact.
 
 ```javascript
 const contactProperties = {
-  'firstName': 'Bob', // Default property
-  'favoriteColor': 'Blue' // Custom property
-}
-const resp = await loops.updateContact('hello@gmail.com', contactProperties)
+  "firstName": "Bob", /* Default property */
+  "favoriteColor": "Blue" /* Custom property */
+};
+const resp = await loops.updateContact("hello@gmail.com", contactProperties);
 ```
 
 #### Response
@@ -143,7 +154,7 @@ Find a contact by email address.
 #### Example
 
 ```javascript
-const resp = await loops.findContact('hello@gmail.com')
+const resp = await loops.findContact("hello@gmail.com");
 ```
 
 #### Response
@@ -161,7 +172,7 @@ This method will return a list of contact objects containing all default propert
     "subscribed": true,
     "userGroup": "",
     "userId": null,
-    "favoriteColor": "Blue" // Custom property
+    "favoriteColor": "Blue" /* Custom property */
   }
 ]
 ```
@@ -182,7 +193,7 @@ Delete a contact, either by email address or user ID.
 #### Example
 
 ```javascript
-const resp = await loops.deleteContact({ email: 'hello@gmail.com' })
+const resp = await loops.deleteContact({ email: "hello@gmail.com" });
 ```
 
 #### Response
@@ -220,12 +231,12 @@ Send an event.
 #### Examples
 
 ```javascript
-const resp = await loops.sendEvent('hello@gmail.com', 'signup')
+const resp = await loops.sendEvent("hello@gmail.com", "signup");
 
 const contactProperties = {
-  'plan': 'pro'
-}
-const resp = await loops.sendEvent('hello@gmail.com', 'signup', contactProperties)
+  "plan": "pro"
+};
+const resp = await loops.sendEvent("hello@gmail.com", "signup", contactProperties);
 ```
 
 #### Response
@@ -263,8 +274,12 @@ Send a transaction email.
 ```javascript
 const dataVariables = {
   "loginUrl": "https://myapp.com/login/"
-}
-const resp = await loops.sendTransactionalEmail('clfq6dinn000yl70fgwwyp82l', 'hello@gmail.com', dataVariables)
+};
+const resp = await loops.sendTransactionalEmail(
+  "clfq6dinn000yl70fgwwyp82l",
+  "hello@gmail.com",
+  dataVariables
+);
 ```
 
 #### Response
@@ -309,7 +324,7 @@ None
 #### Example
 
 ```javascript
-const resp = await loops.getCustomFields()
+const resp = await loops.getCustomFields();
 ```
 
 #### Response
