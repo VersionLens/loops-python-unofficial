@@ -11,7 +11,7 @@ It lets you easily integrate with the Loops API in any Javascript project.
 You can install the package from npm:
 
 ```bash
-npm install @loops/loops
+npm install loops
 ```
 
 You will need a Loops API key to use the package.
@@ -23,7 +23,7 @@ Copy this key and save it in your application code (for example as `LOOPS_API_KE
 ## Usage
 
 ```javascript
-import LoopsClient from "@loops/loops";
+import LoopsClient from "loops";
 
 const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 

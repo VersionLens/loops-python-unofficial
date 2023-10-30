@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Loops-so/loops-js.git"
+    "url": "git+https://github.com/Loops-so/loops-js.git"
   },
   "bugs": {
     "url": "https://github.com/Loops-so/loops-js/issues"
