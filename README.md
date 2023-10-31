@@ -2,9 +2,9 @@
 
 ## Introduction
 
-This is the official Javascript SDK for [Loops](https://loops.so), with full TypeScript support.
+This is the official JavaScript SDK for [Loops](https://loops.so), with full TypeScript support.
 
-It lets you easily integrate with the Loops API in any Javascript project.
+It lets you easily integrate with the Loops API in any JavaScript project.
 
 ## Installation
 
@@ -38,7 +38,7 @@ Each contact in Loops has a set of default properties. These will always be retu
 - `email`
 - `firstName`
 - `lastName`
-- `notes`
+- `source`
 - `subscribed`
 - `userGroup`
 - `userId`
@@ -272,7 +272,7 @@ Send a transaction email.
 |-------------------|--------|----------|-------|
 | `transactionalId` | string | Yes      | The ID of the transactional email to send. |
 | `email`           | string | Yes      | If there is no contact with this email address, a new contact will be created. |
-| `dataVariables`   | object | No       | An object containing the data variables as defined by the transational email template. |
+| `dataVariables`   | object | No       | An object containing contact data as defined by the data variables added to the transactional email template. |
 
 #### Example
 
