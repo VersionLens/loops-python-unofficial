@@ -8,7 +8,7 @@ It lets you easily integrate with the Loops API in any JavaScript project.
 
 ## Installation
 
-You can install the package from npm:
+You can install the package [from npm](https://www.npmjs.com/package/loops):
 
 ```bash
 npm install loops
@@ -16,9 +16,11 @@ npm install loops
 
 You will need a Loops API key to use the package.
 
-In your Loops account, go to [Settings > API](https://app.loops.so/settings?page=api) and click "Generate key".
+In your Loops account, go to the [API Settings page](https://app.loops.so/settings?page=api) and click "Generate key".
 
 Copy this key and save it in your application code (for example as `LOOPS_API_KEY` in an `.env` file).
+
+See the API documentation to learn more about [rate limiting](https://loops.so/docs/api#rate-limiting) and [error handling](https://loops.so/docs/api#debugging).
 
 ## Usage
 
@@ -55,17 +57,19 @@ You are able to add custom properties to your contacts when using the API (expla
 - [sendTransactionalEmail()](#sendtransactionalemail)
 - [getCustomFields()](#getcustomfields)
 
+---
+
 ### createContact()
 
 Create a new contact.
 
-[API Reference](https://loops.so/docs/api#add).
+[API Reference](https://loops.so/docs/api#add)
 
 #### Parameters
 
-| Name         | Type   | Required | Notes |
-|--------------|--------|----------|-------|
-| `email`      | string | Yes      |       |
+| Name         | Type   | Required | Notes                                                                                                                                                                                             |
+| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`      | string | Yes      | If a contact already exists with this email address, an error response will be returned.                                                                                                          |
 | `properties` | object | No       | An object containing default and any custom properties for your contact. If the custom property key doesn't already exist in your account, it will be created and added to all existing contacts. |
 
 #### Examples
@@ -74,9 +78,9 @@ Create a new contact.
 const resp = await loops.createContact("hello@gmail.com");
 
 const contactProperties = {
-  "firstName": "Bob", /* Default property */
-  "favoriteColor": "Red" /* Custom property */
-}
+  firstName: "Bob" /* Default property */,
+  favoriteColor: "Red" /* Custom property */,
+};
 const resp = await loops.createContact("hello@gmail.com", contactProperties);
 ```
 
@@ -98,32 +102,36 @@ This method will return a success or error message:
 }
 ```
 
+---
+
 ### updateContact()
 
 Update a contact.
 
 Note: To update a contact's email address, the contact requires a `userId` value. Then you can make a request with their `userId` and an updated email address.
 
-[API Reference](https://loops.so/docs/api#update).
+[API Reference](https://loops.so/docs/api#update)
 
 #### Parameters
 
-| Name         | Type   | Required | Notes |
-|--------------|--------|----------|-------|
-| `email`      | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created. |
+| Name         | Type   | Required | Notes                                                                                                                                                                                             |
+| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`      | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created using the email and properties in this request.                         |
 | `properties` | object | No       | An object containing default and any custom properties for your contact. If the custom property key doesn't already exist in your account, it will be created and added to all existing contacts. |
 
 #### Example
 
 ```javascript
 const contactProperties = {
-  "firstName": "Bob", /* Default property */
-  "favoriteColor": "Blue" /* Custom property */
+  firstName: "Bob" /* Default property */,
+  favoriteColor: "Blue" /* Custom property */,
 };
 const resp = await loops.updateContact("hello@gmail.com", contactProperties);
 
 /* Updating a contact's email address using userId */
-const resp = await loops.updateContact("newemail@gmail.com", { "userId": "1234" });
+const resp = await loops.updateContact("newemail@gmail.com", {
+  userId: "1234",
+});
 ```
 
 #### Response
@@ -144,16 +152,18 @@ This method will return a success or error message:
 }
 ```
 
+---
+
 ### findContact()
 
 Find a contact by email address.
 
-[API Reference](https://loops.so/docs/api#find).
+[API Reference](https://loops.so/docs/api#find)
 
 #### Parameters
 
 | Name    | Type   | Required | Notes |
-|---------|--------|----------|-------|
+| ------- | ------ | -------- | ----- |
 | `email` | string | Yes      |       |
 
 #### Example
@@ -164,7 +174,9 @@ const resp = await loops.findContact("hello@gmail.com");
 
 #### Response
 
-This method will return a list of contact objects containing all default properties and any custom properties. If no contact is found, an empty list will be returned.
+This method will return a list containing a single contact object, which will include all default properties and any custom properties.
+
+If no contact is found, an empty list will be returned.
 
 ```json
 [
@@ -182,16 +194,18 @@ This method will return a list of contact objects containing all default propert
 ]
 ```
 
+---
+
 ### deleteContact()
 
-Delete a contact, either by email address or user ID.
+Delete a contact, either by email address or `userId`.
 
-[API Reference](https://loops.so/docs/api#delete).
+[API Reference](https://loops.so/docs/api#delete)
 
 #### Parameters
 
 | Name     | Type   | Required | Notes |
-|----------|--------|----------|-------|
+| -------- | ------ | -------- | ----- |
 | `email`  | string | No       |       |
 | `userId` | string | No       |       |
 
@@ -199,6 +213,8 @@ Delete a contact, either by email address or user ID.
 
 ```javascript
 const resp = await loops.deleteContact({ email: "hello@gmail.com" });
+
+const resp = await loops.deleteContact({ userId: "abcd" });
 ```
 
 #### Response
@@ -219,18 +235,20 @@ This method will return a success or error message:
 }
 ```
 
+---
+
 ### sendEvent()
 
-Send an event.
+Send an event to trigger an email in Loops. [Read more about triggering emails](/docs/loop-builder/triggering-emails)
 
-[API Reference](https://loops.so/docs/api#send-event).
+[API Reference](https://loops.so/docs/api#send-event)
 
 #### Parameters
 
-| Name         | Type   | Required | Notes |
-|--------------|--------|----------|-------|
-| `email`      | string | Yes      | If there is no contact with this email address, a new contact will be created. |
-| `eventName`  | string | Yes      |       |
+| Name         | Type   | Required | Notes                                                                                                              |
+| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `email`      | string | Yes      | If there is no contact with this email address, a new contact will be created.                                     |
+| `eventName`  | string | Yes      |                                                                                                                    |
 | `properties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received. |
 
 #### Examples
@@ -238,10 +256,10 @@ Send an event.
 ```javascript
 const resp = await loops.sendEvent("hello@gmail.com", "signup");
 
-const contactProperties = {
-  "plan": "pro"
-};
-const resp = await loops.sendEvent("hello@gmail.com", "signup", contactProperties);
+const resp = await loops.sendEvent("hello@gmail.com", "signup", {
+  firstName: "Bob",
+  plan: "pro"
+});
 ```
 
 #### Response
@@ -260,25 +278,27 @@ This method will return a success or error:
 }
 ```
 
+---
+
 ### sendTransactionalEmail()
 
-Send a transaction email.
+Send a transactional email to a contact. [Learn about sending transactional email](/docs/transactional/guide)
 
-[API Reference](https://loops.so/docs/api#send-transactional-email).
+[API Reference](https://loops.so/docs/api#send-transactional-email)
 
 #### Parameters
 
-| Name              | Type   | Required | Notes |
-|-------------------|--------|----------|-------|
-| `transactionalId` | string | Yes      | The ID of the transactional email to send. |
-| `email`           | string | Yes      | If there is no contact with this email address, a new contact will be created. |
+| Name              | Type   | Required | Notes                                                                                                         |
+| ----------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `transactionalId` | string | Yes      | The ID of the transactional email to send.                                                                    |
+| `email`           | string | Yes      | If there is no contact with this email address, a new contact will be created.                                |
 | `dataVariables`   | object | No       | An object containing contact data as defined by the data variables added to the transactional email template. |
 
 #### Example
 
 ```javascript
 const dataVariables = {
-  "loginUrl": "https://myapp.com/login/"
+  loginUrl: "https://myapp.com/login/"
 };
 const resp = await loops.sendTransactionalEmail(
   "clfq6dinn000yl70fgwwyp82l",
@@ -318,9 +338,11 @@ If there is a problem with the request, a descriptive error message will be retu
 }
 ```
 
+---
+
 ### getCustomFields()
 
-Get a list of custom fields.
+Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](/docs/add-users/properties)
 
 #### Parameters
 
@@ -334,7 +356,9 @@ const resp = await loops.getCustomFields();
 
 #### Response
 
-This method will return a list of custom field objects containing `key` and `label` attributes. If there are no custom fields, an empty list will be returned.
+This method will return a list of custom field objects containing `key` and `label` attributes.
+
+If there are no custom fields, an empty list will be returned.
 
 ```json
 [
