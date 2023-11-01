@@ -239,7 +239,7 @@ This method will return a success or error message:
 
 ### sendEvent()
 
-Send an event to trigger an email in Loops. [Read more about triggering emails](/docs/loop-builder/triggering-emails)
+Send an event to trigger an email in Loops. [Read more about triggering emails](https://loops.so/docs/loop-builder/triggering-emails)
 
 [API Reference](https://loops.so/docs/api#send-event)
 
@@ -282,7 +282,7 @@ This method will return a success or error:
 
 ### sendTransactionalEmail()
 
-Send a transactional email to a contact. [Learn about sending transactional email](/docs/transactional/guide)
+Send a transactional email to a contact. [Learn about sending transactional email](https://loops.so/docs/transactional/guide)
 
 [API Reference](https://loops.so/docs/api#send-transactional-email)
 
@@ -342,7 +342,7 @@ If there is a problem with the request, a descriptive error message will be retu
 
 ### getCustomFields()
 
-Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](/docs/add-users/properties)
+Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](https://loops.so/docs/add-users/properties)
 
 #### Parameters
 
