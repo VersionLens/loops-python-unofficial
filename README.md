@@ -20,7 +20,7 @@ In your Loops account, go to the [API Settings page](https://app.loops.so/settin
 
 Copy this key and save it in your application code (for example as `LOOPS_API_KEY` in an `.env` file).
 
-See the API documentation to learn more about [rate limiting](https://loops.so/docs/api#rate-limiting) and [error handling](https://loops.so/docs/api#debugging).
+See the API documentation to learn more about [rate limiting](https://loops.so/docs/api-reference#rate-limiting) and [error handling](https://loops.so/docs/api-reference#debugging).
 
 ## Usage
 
@@ -63,7 +63,7 @@ You are able to add custom properties to your contacts when using the API (expla
 
 Create a new contact.
 
-[API Reference](https://loops.so/docs/api#add)
+[API Reference](https://loops.so/docs/api-reference/create-contact)
 
 #### Parameters
 
@@ -110,7 +110,7 @@ Update a contact.
 
 Note: To update a contact's email address, the contact requires a `userId` value. Then you can make a request with their `userId` and an updated email address.
 
-[API Reference](https://loops.so/docs/api#update)
+[API Reference](https://loops.so/docs/api-reference/update-contact)
 
 #### Parameters
 
@@ -158,7 +158,7 @@ This method will return a success or error message:
 
 Find a contact by email address.
 
-[API Reference](https://loops.so/docs/api#find)
+[API Reference](https://loops.so/docs/api-reference/find-contact)
 
 #### Parameters
 
@@ -200,7 +200,7 @@ If no contact is found, an empty list will be returned.
 
 Delete a contact, either by email address or `userId`.
 
-[API Reference](https://loops.so/docs/api#delete)
+[API Reference](https://loops.so/docs/api-reference/delete-contact)
 
 #### Parameters
 
@@ -241,7 +241,7 @@ This method will return a success or error message:
 
 Send an event to trigger an email in Loops. [Read more about triggering emails](https://loops.so/docs/loop-builder/triggering-emails)
 
-[API Reference](https://loops.so/docs/api#send-event)
+[API Reference](https://loops.so/docs/api-reference/send-event)
 
 #### Parameters
 
@@ -258,7 +258,7 @@ const resp = await loops.sendEvent("hello@gmail.com", "signup");
 
 const resp = await loops.sendEvent("hello@gmail.com", "signup", {
   firstName: "Bob",
-  plan: "pro"
+  plan: "pro",
 });
 ```
 
@@ -284,7 +284,7 @@ This method will return a success or error:
 
 Send a transactional email to a contact. [Learn about sending transactional email](https://loops.so/docs/transactional/guide)
 
-[API Reference](https://loops.so/docs/api#send-transactional-email)
+[API Reference](https://loops.so/docs/api-reference/send-transactional-email)
 
 #### Parameters
 
@@ -298,7 +298,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 
 ```javascript
 const dataVariables = {
-  loginUrl: "https://myapp.com/login/"
+  loginUrl: "https://myapp.com/login/",
 };
 const resp = await loops.sendTransactionalEmail(
   "clfq6dinn000yl70fgwwyp82l",
@@ -343,6 +343,8 @@ If there is a problem with the request, a descriptive error message will be retu
 ### getCustomFields()
 
 Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](https://loops.so/docs/add-users/properties)
+
+[API Reference](https://loops.so/docs/api-reference/list-custom-fields)
 
 #### Parameters
 
