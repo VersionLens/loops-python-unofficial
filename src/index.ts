@@ -40,12 +40,14 @@ interface TransactionalSuccess {
 }
 
 interface TransactionalError {
+  type: "error";
   success: false;
   path: string;
   message: string;
 }
 
 interface TransactionalNestedError {
+  type: "nestedError";
   success: false;
   error: {
     path: string;
