@@ -344,7 +344,7 @@ If there is a problem with the request, a descriptive error message will be retu
 
 ### getCustomFields()
 
-Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](https://loops.so/docs/add-users/properties)
+Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](https://loops.so/docs/contacts/properties)
 
 [API Reference](https://loops.so/docs/api-reference/list-custom-fields)
 
