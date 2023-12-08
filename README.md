@@ -290,13 +290,17 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 
 #### Parameters
 
-| Name              | Type   | Required | Notes                                                                                                                                                |
-| ----------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transactionalId` | string | Yes      | The ID of the transactional email to send.                                                                                                           |
-| `email`           | string | Yes      | If there is no contact with this email address, a new contact will be created.                                                                       |
-| `dataVariables`   | object | No       | An object containing data as defined by the data variables added to the transactional email template.<br>Values can be of type `string` or `number`. |
+| Name                        | Type     | Required | Notes                                                                                                                                                                                            |
+| --------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `transactionalId`           | string   | Yes      | The ID of the transactional email to send.                                                                                                                                                       |
+| `email`                     | string   | Yes      | If there is no contact with this email address, a new contact will be created.                                                                                                                   |
+| `dataVariables`             | object   | No       | An object containing data as defined by the data variables added to the transactional email template.<br />Values can be of type `string` or `number`.                                           |
+| `attachments`               | object[] | No       | A list of attachments objects.<br />**Please note**: Attachments need to be enabled on your account before using them with the API. [Read more](https://loops.so/docs/transactional/attachments) |
+| `attachments[].filename`    | string   | No       | The name of the file, shown in email clients.                                                                                                                                                    |
+| `attachments[].contentType` | string   | No       | THe MIME type of the file.                                                                                                                                                                       |
+| `attachments[].data`        | string   | No       | The base64-encoded content of the file.                                                                                                                                                          |
 
-#### Example
+#### Examples
 
 ```javascript
 const dataVariables = {
@@ -305,7 +309,22 @@ const dataVariables = {
 const resp = await loops.sendTransactionalEmail(
   "clfq6dinn000yl70fgwwyp82l",
   "hello@gmail.com",
-  dataVariables
+  dataVariables,
+);
+
+// Please contact us to enable attachments on your account.
+const attachments = [
+  {
+    filename: "presentation.pdf",
+    contentType: "application/pdf",
+    data: "JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPD...",
+  },
+];
+const resp = await loops.sendTransactionalEmail(
+  "clfq6dinn000yl70fgwwyp82l",
+  "hello@gmail.com",
+  dataVariables,
+  attachments,
 );
 ```
 
@@ -376,3 +395,11 @@ If there are no custom fields, an empty list will be returned.
   }
 ]
 ```
+
+---
+
+## Version history
+
+- `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
+- `v0.1.2` (Dec 6, 2023) - Improved transactional error types.
+- `v0.1.1` (Nov 1, 2023) - Initial release.

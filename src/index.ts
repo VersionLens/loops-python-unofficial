@@ -89,6 +89,21 @@ type ContactProperties = Record<string, string | number | boolean>;
 
 type TransactionalVariables = Record<string, string | number>;
 
+interface TransactionalAttachment {
+  /**
+   * The file name, shown in email clients.
+   */
+  filename: string;
+  /**
+   * MIME type of the file.
+   */
+  contentType: string;
+  /**
+   * Base64-encoded content of the file.
+   */
+  data: string;
+}
+
 export default class LoopsClient {
   apiKey: string;
   apiRoot = "https://app.loops.so/api/";
@@ -259,14 +274,17 @@ export default class LoopsClient {
   async sendTransactionalEmail(
     transactionalId: string,
     email: string,
-    dataVariables?: TransactionalVariables
+    dataVariables?: TransactionalVariables,
+    attachments?: Array<TransactionalAttachment>
   ): Promise<TransactionalResponse> {
     const payload: {
       transactionalId: string;
       email: string;
       dataVariables?: TransactionalVariables;
+      attachments?: Array<TransactionalAttachment>;
     } = { transactionalId, email };
     if (dataVariables) payload["dataVariables"] = dataVariables;
+    if (attachments) payload["attachments"] = attachments;
     return this._makeQuery({
       path: "v1/transactional",
       method: "POST",
