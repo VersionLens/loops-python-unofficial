@@ -21,13 +21,37 @@ interface ErrorResponse {
 }
 
 type Contact = {
+  /**
+   * The contact's ID.
+   */
   id: string;
+  /**
+   * The contact's email address.
+   */
   email: string;
+  /**
+   * The contact's first name.
+   */
   firstName: string | null;
+  /**
+   * The contact's last name.
+   */
   lastName: string | null;
+  /**
+   * The source the contact was created from.
+   */
   source: string;
+  /**
+   * Whether the contact will receive campaign and loops emails.
+   */
   subscribed: boolean;
+  /**
+   * The contact's user group (used to segemnt users when sending emails).
+   */
   userGroup: string;
+  /**
+   * A unique user ID (for example, from an external application).
+   */
   userId: string | null;
 } & Record<string, any>;
 
