@@ -1,6 +1,6 @@
 {
   "name": "loops",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Dan Rowden <dan@loops.so>",
   "license": "MIT",
   "main": "./dist/index.js",
