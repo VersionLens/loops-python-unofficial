@@ -297,7 +297,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 | `dataVariables`             | object   | No       | An object containing data as defined by the data variables added to the transactional email template.<br />Values can be of type `string` or `number`.                                           |
 | `attachments`               | object[] | No       | A list of attachments objects.<br />**Please note**: Attachments need to be enabled on your account before using them with the API. [Read more](https://loops.so/docs/transactional/attachments) |
 | `attachments[].filename`    | string   | No       | The name of the file, shown in email clients.                                                                                                                                                    |
-| `attachments[].contentType` | string   | No       | THe MIME type of the file.                                                                                                                                                                       |
+| `attachments[].contentType` | string   | No       | The MIME type of the file.                                                                                                                                                                       |
 | `attachments[].data`        | string   | No       | The base64-encoded content of the file.                                                                                                                                                          |
 
 #### Examples
