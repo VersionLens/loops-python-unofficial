@@ -55,9 +55,16 @@ type Contact = {
   userId: string | null;
 } & Record<string, any>;
 
-interface EventResponse {
+interface EventSuccessResponse {
   success: boolean;
 }
+
+interface EventErrorResponse {
+  success: false;
+  message: string;
+}
+
+type EventResponse = EventSuccessResponse | EventErrorResponse;
 
 interface TransactionalSuccess {
   success: true;
@@ -250,11 +257,34 @@ export default class LoopsClient {
    * @returns {Object} Response (JSON)
    */
   async sendEvent(
-    email: string,
+    identifier:
+      | string
+      | {
+          email?: string;
+          userId?: string;
+        },
     eventName: string,
     properties?: ContactProperties
   ): Promise<EventResponse> {
-    const payload = { email, eventName, ...properties };
+    let email: string | undefined;
+    let userId: string | undefined;
+
+    // Before v0.1.4, the first parameter was `email` (string). This is backwards compatible.
+    if (typeof identifier === "string") {
+      email = identifier;
+    } else {
+      email = identifier.email;
+      userId = identifier.userId;
+    }
+
+    if (!userId && !email)
+      throw "You must provide an `email` or `userId` value.";
+    const payload: { email?: string; userId?: string; eventName: string } = {
+      eventName,
+      ...properties,
+    };
+    if (email) payload["email"] = email;
+    if (userId) payload["userId"] = userId;
     return this._makeQuery({
       path: "v1/events/send",
       method: "POST",

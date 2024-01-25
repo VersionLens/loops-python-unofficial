@@ -69,10 +69,10 @@ Create a new contact.
 
 #### Parameters
 
-| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                           |
-| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`      | string | Yes      | If a contact already exists with this email address, an error response will be returned.                                                                                                                                                                                                        |
-| `properties` | object | No       | An object containing default and any custom properties for your contact.<br>Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br>Values can be of type `string`, `number` or `boolean`. |
+| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`      | string | Yes      | If a contact already exists with this email address, an error response will be returned.                                                                                                                                                                                                                                                                                                  |
+| `properties` | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 
 #### Examples
 
@@ -116,10 +116,10 @@ Note: To update a contact's email address, the contact requires a `userId` value
 
 #### Parameters
 
-| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                           |
-| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`      | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created using the email and properties in this request.                                                                                                                       |
-| `properties` | object | No       | An object containing default and any custom properties for your contact.<br>Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br>Values can be of type `string`, `number` or `boolean`. |
+| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`      | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created using the email and properties in this request.                                                                                                                                                                                                                 |
+| `properties` | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 
 #### Example
 
@@ -247,21 +247,30 @@ Send an event to trigger an email in Loops. [Read more about triggering emails](
 
 #### Parameters
 
-| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                     |
-| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`      | string | Yes      | If there is no contact with this email address, a new contact will be created.                                                                                                                                                                                                                                                            |
-| `eventName`  | string | Yes      |                                                                                                                                                                                                                                                                                                                                           |
-| `properties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br>Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br>Values can be of type `string`, `number` or `boolean`. |
+| Name                  | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contactQuery`        | object | Yes      | Provide either an `email` or `userId` value or both to identify the contact. If both are provided, the system will look for a matching contact with either value and update the other property.                                                                                                                                                                                                                                   |
+| `contactQuery.email`  | string | No       | The contact's email address.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `contactQuery.userId` | string | No       | The contact’s unique user ID. This must already have been added to your contact in Loops.                                                                                                                                                                                                                                                                                                                                         |
+| `eventName`           | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `properties`          | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br>Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 
 #### Examples
 
 ```javascript
-const resp = await loops.sendEvent("hello@gmail.com", "signup");
+const resp = await loops.sendEvent({ email: "hello@gmail.com" }, "signup");
 
-const resp = await loops.sendEvent("hello@gmail.com", "signup", {
-  firstName: "Bob",
-  plan: "pro",
-});
+// In this case, the system will look for a contact with either a matching `email` or `userId` value.
+// If a contact is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated.
+// If a contact is not found, a new contact will be created using both `email` and `userId` values.
+const resp = await loops.sendEvent(
+  { userId: "1234567890", email: "hello@gmail.com" },
+  "signup",
+  {
+    firstName: "Bob",
+    plan: "pro",
+  }
+);
 ```
 
 #### Response
@@ -276,7 +285,8 @@ This method will return a success or error:
 
 ```json
 {
-  "success": false
+  "success": false,
+  "message": "An error message here."
 }
 ```
 
@@ -309,7 +319,7 @@ const dataVariables = {
 const resp = await loops.sendTransactionalEmail(
   "clfq6dinn000yl70fgwwyp82l",
   "hello@gmail.com",
-  dataVariables,
+  dataVariables
 );
 
 // Please contact us to enable attachments on your account.
@@ -324,7 +334,7 @@ const resp = await loops.sendTransactionalEmail(
   "clfq6dinn000yl70fgwwyp82l",
   "hello@gmail.com",
   dataVariables,
-  attachments,
+  attachments
 );
 ```
 
@@ -400,6 +410,7 @@ If there are no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v0.1.4` (Jan 25, 2023) - Added support for `userId` in [`sendEvent()`](#sendevent) request. Added missing error response type for `sendEvent()` requests.
 - `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
 - `v0.1.2` (Dec 6, 2023) - Improved transactional error types.
 - `v0.1.1` (Nov 1, 2023) - Initial release.
