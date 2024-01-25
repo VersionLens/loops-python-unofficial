@@ -389,19 +389,21 @@ const resp = await loops.getCustomFields();
 
 #### Response
 
-This method will return a list of custom field objects containing `key` and `label` attributes.
+This method will return a list of custom field objects containing `key`, `label` and `type` attributes.
 
-If there are no custom fields, an empty list will be returned.
+If your account has no custom fields, an empty list will be returned.
 
 ```json
 [
   {
     "key": "favoriteColor",
-    "label": "Favourite Color"
+    "label": "Favorite Color",
+    "type": "string"
   },
   {
     "key": "plan",
-    "label": "Plan"
+    "label": "Plan",
+    "type": "string"
   }
 ]
 ```
@@ -410,6 +412,7 @@ If there are no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v0.1.5` (Jan 25, 2023) - `getCustomFields()` now returns `type` values for each contact property.
 - `v0.1.4` (Jan 25, 2023) - Added support for `userId` in [`sendEvent()`](#sendevent) request. Added missing error response type for `sendEvent()` requests.
 - `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
 - `v0.1.2` (Dec 6, 2023) - Improved transactional error types.

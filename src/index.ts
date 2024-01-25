@@ -327,7 +327,7 @@ export default class LoopsClient {
    *
    * @returns List of custom fields (JSON)
    */
-  async getCustomFields(): Promise<Record<string, string>[]> {
+  async getCustomFields(): Promise<Record<"key" | "label" | "type", string>[]> {
     return this._makeQuery({
       path: "v1/contacts/customFields",
     });
