@@ -3,8 +3,14 @@
   "version": "0.1.5",
   "author": "Dan Rowden <dan@loops.so>",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "exports": "./dist/index.js",
+  "main": "./dist/index.cjs", 
+  "module": "./dist/index.esm.js", 
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js", 
+      "require": "./dist/index.cjs" 
+    }
+  },
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup"
