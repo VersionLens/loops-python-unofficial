@@ -1,14 +1,14 @@
 {
   "name": "loops",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "author": "Dan Rowden <dan@loops.so>",
   "license": "MIT",
-  "main": "./dist/index.cjs", 
-  "module": "./dist/index.esm.js", 
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js", 
-      "require": "./dist/index.cjs" 
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
