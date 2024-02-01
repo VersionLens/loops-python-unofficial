@@ -412,8 +412,9 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
-- `v0.1.5` (Jan 25, 2023) - `getCustomFields()` now returns `type` values for each contact property.
-- `v0.1.4` (Jan 25, 2023) - Added support for `userId` in [`sendEvent()`](#sendevent) request. Added missing error response type for `sendEvent()` requests.
+- `v0.2.0` (Feb 1, 2024) - CommonJS support.
+- `v0.1.5` (Jan 25, 2024) - `getCustomFields()` now returns `type` values for each contact property.
+- `v0.1.4` (Jan 25, 2024) - Added support for `userId` in [`sendEvent()`](#sendevent) request. Added missing error response type for `sendEvent()` requests.
 - `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
 - `v0.1.2` (Dec 6, 2023) - Improved transactional error types.
 - `v0.1.1` (Nov 1, 2023) - Initial release.
