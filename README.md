@@ -412,6 +412,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v0.2.1` (Feb 6, 2024) - Fix for ESM imports.
 - `v0.2.0` (Feb 1, 2024) - CommonJS support.
 - `v0.1.5` (Jan 25, 2024) - `getCustomFields()` now returns `type` values for each contact property.
 - `v0.1.4` (Jan 25, 2024) - Added support for `userId` in [`sendEvent()`](#sendevent) request. Added missing error response type for `sendEvent()` requests.
