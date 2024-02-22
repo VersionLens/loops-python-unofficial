@@ -14,6 +14,8 @@ You can install the package [from npm](https://www.npmjs.com/package/loops):
 npm install loops
 ```
 
+Minimum Node version required: 18.0.0.
+
 You will need a Loops API key to use the package.
 
 In your Loops account, go to the [API Settings page](https://app.loops.so/settings?page=api) and click "Generate key".
