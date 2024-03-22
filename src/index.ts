@@ -164,7 +164,7 @@ export default class LoopsClient {
    * @param {string} email The email address of the contact.
    * @param {Object} [properties] All other contact properties, including custom properties.
    *
-   * @see https://loops.so/docs/add-users/api-reference#add
+   * @see https://loops.so/docs/api-reference/create-contact
    *
    * @returns {Object} Contact record or error response (JSON)
    */
@@ -186,7 +186,7 @@ export default class LoopsClient {
    * @param {string} email The email address of the contact.
    * @param {Object} properties All other contact properties, including custom properties.
    *
-   * @see https://loops.so/docs/add-users/api-reference#update
+   * @see https://loops.so/docs/api-reference/update-contact
    *
    * @returns {Object} Contact record or error response (JSON)
    */
@@ -207,7 +207,7 @@ export default class LoopsClient {
    *
    * @param {string} email The email address of the contact.
    *
-   * @see https://loops.so/docs/add-users/api-reference#find
+   * @see https://loops.so/docs/api-reference/find-contact
    *
    * @returns {Object} List of contact records (JSON)
    */
@@ -225,7 +225,7 @@ export default class LoopsClient {
    * @param {string} [params.email] The email address of the contact.
    * @param {string | number} [params.userId] The user ID of the contact.
    *
-   * @see https://loops.so/docs/add-users/api-reference#delete
+   * @see https://loops.so/docs/api-reference/delete-contact
    *
    * @returns {Object} Confirmation or error response (JSON)
    */
@@ -257,7 +257,7 @@ export default class LoopsClient {
    * @param {Object} [params.contactProperties] Properties to update the contact with, including custom properties.
    * @param {Object} [params.eventProperties] Event properties, made available in emails triggered by the event.
    *
-   * @see https://loops.so/docs/add-users/api-reference#send
+   * @see https://loops.so/docs/api-reference/send-event
    *
    * @returns {Object} Response (JSON)
    */
@@ -302,6 +302,8 @@ export default class LoopsClient {
    * @param {string} email The email address of the recipient.
    * @param {Object} [dataVariables] Data variables as defined by the transational email template.
    *
+   * @see https://loops.so/docs/api-reference/send-transactional-email
+   *
    * @returns {Object} Confirmation or error response (JSON)
    */
   async sendTransactionalEmail(
@@ -328,7 +330,9 @@ export default class LoopsClient {
   /**
    * Get custom fields/properties.
    *
-   * @returns List of custom fields (JSON)
+   * @see https://loops.so/docs/api-reference/list-custom-fields
+   *
+   * @returns {Object} List of custom fields (JSON)
    */
   async getCustomFields(): Promise<Record<"key" | "label" | "type", string>[]> {
     return this._makeQuery({
