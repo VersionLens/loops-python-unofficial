@@ -94,6 +94,8 @@ type TransactionalResponse =
 
 type ContactProperties = Record<string, string | number | boolean>;
 
+type EventProperties = Record<string, string | number | boolean>;
+
 type TransactionalVariables = Record<string, string | number>;
 
 interface TransactionalAttachment {
@@ -221,7 +223,7 @@ export default class LoopsClient {
    *
    * @param {Object} params
    * @param {string} [params.email] The email address of the contact.
-   * @param {string} [params.userId] The user ID of the contact.
+   * @param {string | number} [params.userId] The user ID of the contact.
    *
    * @see https://loops.so/docs/add-users/api-reference#delete
    *
@@ -232,9 +234,9 @@ export default class LoopsClient {
     userId,
   }: {
     email?: string;
-    userId?: string;
+    userId?: string | number;
   }): Promise<DeleteSuccessResponse | ErrorResponse> {
-    const payload: { email?: string; userId?: string } = {};
+    const payload: { email?: string; userId?: string | number } = {};
     if (email) payload["email"] = email;
     else if (userId) payload["userId"] = userId;
     else throw "You must provide an `email` or `userId` value.";
@@ -248,40 +250,41 @@ export default class LoopsClient {
   /**
    * Send an event.
    *
-   * @param {string} email The email address of the contact.
-   * @param {string} eventName The name of the event.
-   * @param {Object} [properties] Properties to update the contact with, including custom properties.
+   * @param {Object} params
+   * @param {string} [params.email] The email address of the contact.
+   * @param {string | number} [params.userId] The user ID of the contact.
+   * @param {string} params.eventName The name of the event.
+   * @param {Object} [params.contactProperties] Properties to update the contact with, including custom properties.
+   * @param {Object} [params.eventProperties] Event properties, made available in emails triggered by the event.
    *
    * @see https://loops.so/docs/add-users/api-reference#send
    *
    * @returns {Object} Response (JSON)
    */
-  async sendEvent(
-    identifier:
-      | string
-      | {
-          email?: string;
-          userId?: string;
-        },
-    eventName: string,
-    properties?: ContactProperties
-  ): Promise<EventResponse> {
-    let email: string | undefined;
-    let userId: string | undefined;
-
-    // Before v0.1.4, the first parameter was `email` (string). This is backwards compatible.
-    if (typeof identifier === "string") {
-      email = identifier;
-    } else {
-      email = identifier.email;
-      userId = identifier.userId;
-    }
-
+  async sendEvent({
+    email,
+    userId,
+    eventName,
+    contactProperties,
+    eventProperties,
+  }: {
+    email?: string;
+    userId?: string | number;
+    eventName: string;
+    contactProperties?: ContactProperties;
+    eventProperties?: EventProperties;
+  }): Promise<EventResponse> {
     if (!userId && !email)
       throw "You must provide an `email` or `userId` value.";
-    const payload: { email?: string; userId?: string; eventName: string } = {
+    const payload: {
+      email?: string;
+      userId?: string | number;
+      eventName: string;
+      eventProperties?: EventProperties;
+    } = {
       eventName,
-      ...properties,
+      ...contactProperties,
+      eventProperties,
     };
     if (email) payload["email"] = email;
     if (userId) payload["userId"] = userId;

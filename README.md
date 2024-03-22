@@ -243,36 +243,51 @@ This method will return a success or error message:
 
 ### sendEvent()
 
-Send an event to trigger an email in Loops. [Read more about triggering emails](https://loops.so/docs/loop-builder/triggering-emails)
+Send an event to trigger an email in Loops. [Read more about events](https://loops.so/docs/events/events)
 
 [API Reference](https://loops.so/docs/api-reference/send-event)
 
 #### Parameters
 
-| Name                  | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contactQuery`        | object | Yes      | Provide either an `email` or `userId` value or both to identify the contact. If both are provided, the system will look for a matching contact with either value and update the other property.                                                                                                                                                                                                                                   |
-| `contactQuery.email`  | string | No       | The contact's email address.                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `contactQuery.userId` | string | No       | The contact’s unique user ID. This must already have been added to your contact in Loops.                                                                                                                                                                                                                                                                                                                                         |
-| `eventName`           | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `properties`          | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br>Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| Name                | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`             | string | No       | The contact's email address. Required if `userId` is not present.                                                                                                                                                                                                                                                                                                                                                                   |
+| `userId`            | string | No       | The contact's unique user ID. If you use `userID` without `email`, this value must have already been added to your contact in Loops. Required if `email` is not present.                                                                                                                                                                                                                                                                                                       |
+| `eventName`         | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `contactProperties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| `eventProperties`   | object | No       | An object containing event properties, which will be made availabe in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                               |
 
 #### Examples
 
 ```javascript
-const resp = await loops.sendEvent({ email: "hello@gmail.com" }, "signup");
+const resp = await loops.sendEvent({
+  email: "hello@gmail.com",
+  eventName: "signup",
+});
 
-// In this case, the system will look for a contact with either a matching `email` or `userId` value.
+const resp = await loops.sendEvent({
+  email: "hello@gmail.com",
+  eventName: "signup",
+  eventProperties: {
+    username: "user1234",
+    signupDate: "2024-03-21T10:09:23Z",
+  },
+});
+
+// In this case with both email and userId present, the system will look for a contact with either a 
+//  matching `email` or `userId` value.
 // If a contact is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated.
 // If a contact is not found, a new contact will be created using both `email` and `userId` values.
-const resp = await loops.sendEvent(
-  { userId: "1234567890", email: "hello@gmail.com" },
-  "signup",
-  {
+// Any values added in `contactProperties` will also be updated on the contact.
+const resp = await loops.sendEvent({
+  userId: "1234567890",
+  email: "hello@gmail.com",
+  eventName: "signup",
+  contactProperties: {
     firstName: "Bob",
     plan: "pro",
-  }
-);
+  },
+});
 ```
 
 #### Response
@@ -414,6 +429,8 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v0.4.0` (Mar 22, 2024) - Support for new `eventProperties` in the **Send event** endpoint. This includes a breaking change for the [`sendEvent()`](#sendevent) parameters.
+- `v0.3.0` (Feb 22, 2024) - Updated minimum Node version to 18.0.0.
 - `v0.2.1` (Feb 6, 2024) - Fix for ESM imports.
 - `v0.2.0` (Feb 1, 2024) - CommonJS support.
 - `v0.1.5` (Jan 25, 2024) - `getCustomFields()` now returns `type` values for each contact property.
