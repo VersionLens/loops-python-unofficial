@@ -113,7 +113,7 @@ interface TransactionalAttachment {
   data: string;
 }
 
-export default class LoopsClient {
+class LoopsClient {
   apiKey: string;
   apiRoot = "https://app.loops.so/api/";
 
@@ -340,3 +340,5 @@ export default class LoopsClient {
     });
   }
 }
+
+export { LoopsClient };

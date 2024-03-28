@@ -27,7 +27,7 @@ See the API documentation to learn more about [rate limiting](https://loops.so/d
 ## Usage
 
 ```javascript
-import LoopsClient from "loops";
+import { LoopsClient } from "loops";
 
 const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 
@@ -429,6 +429,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v0.4.1` (Mar 28, 2024) - Fix for ESM types. Switched to named export.
 - `v0.4.0` (Mar 22, 2024) - Support for new `eventProperties` in the **Send event** endpoint. This includes a breaking change for the [`sendEvent()`](#sendevent) parameters.
 - `v0.3.0` (Feb 22, 2024) - Updated minimum Node version to 18.0.0.
 - `v0.2.1` (Feb 6, 2024) - Fix for ESM imports.
