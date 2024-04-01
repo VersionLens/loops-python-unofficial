@@ -429,6 +429,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v1.0.1` (Apr 1, 2024) - Fixed types for `sendEvent()`.
 - `v1.0.0` (Mar 28, 2024) - Fix for ESM types. Switched to named export.
 - `v0.4.0` (Mar 22, 2024) - Support for new `eventProperties` in the **Send event** endpoint. This includes a breaking change for the [`sendEvent()`](#sendevent) parameters.
 - `v0.3.0` (Feb 22, 2024) - Updated minimum Node version to 18.0.0.
