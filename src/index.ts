@@ -205,16 +205,29 @@ class LoopsClient {
   /**
    * Find a contact by email address.
    *
-   * @param {string} email The email address of the contact.
+   * @param {Object} params
+   * @param {string} [params.email] The email address of the contact.
+   * @param {string} [params.userId] The user ID of the contact.
    *
    * @see https://loops.so/docs/api-reference/find-contact
    *
    * @returns {Object} List of contact records (JSON)
    */
-  async findContact(email: string): Promise<Contact[]> {
+  async findContact({
+    email,
+    userId,
+  }: {
+    email?: string;
+    userId?: string;
+  }): Promise<Contact[]> {
+    if (email && userId) throw "Only one parameter is permitted.";
+    const params: { email?: string; userId?: string } = {};
+    if (email) params["email"] = email;
+    else if (userId) params["userId"] = userId;
+    else throw "You must provide an `email` or `userId` value.";
     return this._makeQuery({
       path: "v1/contacts/find",
-      params: { email },
+      params,
     });
   }
 
@@ -223,7 +236,7 @@ class LoopsClient {
    *
    * @param {Object} params
    * @param {string} [params.email] The email address of the contact.
-   * @param {string | number} [params.userId] The user ID of the contact.
+   * @param {string} [params.userId] The user ID of the contact.
    *
    * @see https://loops.so/docs/api-reference/delete-contact
    *
@@ -234,9 +247,10 @@ class LoopsClient {
     userId,
   }: {
     email?: string;
-    userId?: string | number;
+    userId?: string;
   }): Promise<DeleteSuccessResponse | ErrorResponse> {
-    const payload: { email?: string; userId?: string | number } = {};
+    if (email && userId) throw "Only one parameter is permitted.";
+    const payload: { email?: string; userId?: string } = {};
     if (email) payload["email"] = email;
     else if (userId) payload["userId"] = userId;
     else throw "You must provide an `email` or `userId` value.";
@@ -252,7 +266,7 @@ class LoopsClient {
    *
    * @param {Object} params
    * @param {string} [params.email] The email address of the contact.
-   * @param {string | number} [params.userId] The user ID of the contact.
+   * @param {string} [params.userId] The user ID of the contact.
    * @param {string} params.eventName The name of the event.
    * @param {Object} [params.contactProperties] Properties to update the contact with, including custom properties.
    * @param {Object} [params.eventProperties] Event properties, made available in emails triggered by the event.
@@ -269,7 +283,7 @@ class LoopsClient {
     eventProperties,
   }: {
     email?: string;
-    userId?: string | number;
+    userId?: string;
     eventName: string;
     contactProperties?: ContactProperties;
     eventProperties?: EventProperties;
@@ -278,7 +292,7 @@ class LoopsClient {
       throw "You must provide an `email` or `userId` value.";
     const payload: {
       email?: string;
-      userId?: string | number;
+      userId?: string;
       eventName: string;
       eventProperties?: EventProperties;
     } = {

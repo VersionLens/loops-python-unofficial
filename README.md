@@ -160,20 +160,25 @@ This method will return a success or error message:
 
 ### findContact()
 
-Find a contact by email address.
+Find a contact.
 
 [API Reference](https://loops.so/docs/api-reference/find-contact)
 
 #### Parameters
 
-| Name    | Type   | Required | Notes |
-| ------- | ------ | -------- | ----- |
-| `email` | string | Yes      |       |
+You must use one parameter in the request.
 
-#### Example
+| Name     | Type   | Required | Notes |
+| -------- | ------ | -------- | ----- |
+| `email`  | string | No       |       |
+| `userId` | string | No       |       |
+
+#### Examples
 
 ```javascript
-const resp = await loops.findContact("hello@gmail.com");
+const resp = await loops.findContact({ email: "hello@gmail.com" });
+
+const resp = await loops.findContact({ userId: "12345" });
 ```
 
 #### Response
@@ -192,7 +197,7 @@ If no contact is found, an empty list will be returned.
     "source": "API",
     "subscribed": true,
     "userGroup": "",
-    "userId": null,
+    "userId": "12345",
     "favoriteColor": "Blue" /* Custom property */
   }
 ]
@@ -208,6 +213,8 @@ Delete a contact, either by email address or `userId`.
 
 #### Parameters
 
+You must use one parameter in the request.
+
 | Name     | Type   | Required | Notes |
 | -------- | ------ | -------- | ----- |
 | `email`  | string | No       |       |
@@ -218,7 +225,7 @@ Delete a contact, either by email address or `userId`.
 ```javascript
 const resp = await loops.deleteContact({ email: "hello@gmail.com" });
 
-const resp = await loops.deleteContact({ userId: "abcd" });
+const resp = await loops.deleteContact({ userId: "12345" });
 ```
 
 #### Response
@@ -252,7 +259,7 @@ Send an event to trigger an email in Loops. [Read more about events](https://loo
 | Name                | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `email`             | string | No       | The contact's email address. Required if `userId` is not present.                                                                                                                                                                                                                                                                                                                                                                   |
-| `userId`            | string | No       | The contact's unique user ID. If you use `userID` without `email`, this value must have already been added to your contact in Loops. Required if `email` is not present.                                                                                                                                                                                                                                                                                                       |
+| `userId`            | string | No       | The contact's unique user ID. If you use `userID` without `email`, this value must have already been added to your contact in Loops. Required if `email` is not present.                                                                                                                                                                                                                                                            |
 | `eventName`         | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `contactProperties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 | `eventProperties`   | object | No       | An object containing event properties, which will be made availabe in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                               |
@@ -274,7 +281,7 @@ const resp = await loops.sendEvent({
   },
 });
 
-// In this case with both email and userId present, the system will look for a contact with either a 
+// In this case with both email and userId present, the system will look for a contact with either a
 //  matching `email` or `userId` value.
 // If a contact is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated.
 // If a contact is not found, a new contact will be created using both `email` and `userId` values.
@@ -429,9 +436,12 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v2.0.0` (Apr 19, 2024)
+  - Added `userId` as a parameter to [`findContact()`](#findcontact). This includes a breaking change for the `findContact()` parameters.
+  - `userId` values must now be strings (could have also been numbers previously).
 - `v1.0.1` (Apr 1, 2024) - Fixed types for `sendEvent()`.
 - `v1.0.0` (Mar 28, 2024) - Fix for ESM types. Switched to named export.
-- `v0.4.0` (Mar 22, 2024) - Support for new `eventProperties` in the **Send event** endpoint. This includes a breaking change for the [`sendEvent()`](#sendevent) parameters.
+- `v0.4.0` (Mar 22, 2024) - Support for new `eventProperties` in [`sendEvent()`](#sendevent). This includes a breaking change for the `sendEvent()` parameters.
 - `v0.3.0` (Feb 22, 2024) - Updated minimum Node version to 18.0.0.
 - `v0.2.1` (Feb 6, 2024) - Fix for ESM imports.
 - `v0.2.0` (Feb 1, 2024) - CommonJS support.
