@@ -288,7 +288,7 @@ If your account has no mailing lists, an empty list will be returned.
 
 ### sendEvent()
 
-Send an event to trigger an email in Loops. [Read more about events](https://loops.so/docs/events/events)
+Send an event to trigger an email in Loops. [Read more about events](https://loops.so/docs/events)
 
 [API Reference](https://loops.so/docs/api-reference/send-event)
 
