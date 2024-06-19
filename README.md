@@ -57,6 +57,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [updateContact()](#updatecontact)
 - [findContact()](#findcontact)
 - [deleteContact()](#deletecontact)
+- [getMailingLists()](#getmailinglists)
 - [sendEvent()](#sendevent)
 - [sendTransactionalEmail()](#sendtransactionalemail)
 - [getCustomFields()](#getcustomfields)
@@ -244,6 +245,43 @@ This method will return a success or error message:
   "success": false,
   "message": "An error message here."
 }
+```
+
+---
+
+### getMailingLists()
+
+Get a list of your account's mailing lists. [Read more about mailing lists](https://loops.so/docs/contacts/mailing-lists)
+
+[API Reference](https://loops.so/docs/api-reference/list-mailing-lists)
+
+#### Parameters
+
+None
+
+#### Example
+
+```javascript
+const resp = await loops.getMailingLists();
+```
+
+#### Response
+
+This method will return a list of mailing list objects containing `id` and `name` attributes.
+
+If your account has no mailing lists, an empty list will be returned.
+
+```json
+[
+  {
+    "id": "list_123",
+    "name": "Main list"
+  },
+  {
+    "id": "list_456",
+    "name": "Investors"
+  }
+]
 ```
 
 ---
@@ -436,6 +474,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v2.1.0` (Jun 19, 2024) - Added support for new [List mailing lists](#getmailinglists) endpoint.
 - `v2.0.0` (Apr 19, 2024)
   - Added `userId` as a parameter to [`findContact()`](#findcontact). This includes a breaking change for the `findContact()` parameters.
   - `userId` values must now be strings (could have also been numbers previously).

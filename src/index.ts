@@ -203,7 +203,7 @@ class LoopsClient {
   }
 
   /**
-   * Find a contact by email address.
+   * Find a contact by email address or user ID.
    *
    * @param {Object} params
    * @param {string} [params.email] The email address of the contact.
@@ -258,6 +258,19 @@ class LoopsClient {
       path: "v1/contacts/delete",
       method: "POST",
       payload,
+    });
+  }
+
+  /**
+   * Get mailing lists.
+   *
+   * @see https://loops.so/docs/api-reference/list-mailing-lists
+   *
+   * @returns {Object} List of mailing lists (JSON)
+   */
+  async getMailingLists(): Promise<Record<"id" | "name", string>[]> {
+    return this._makeQuery({
+      path: "v1/lists",
     });
   }
 
