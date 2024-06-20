@@ -163,6 +163,7 @@ class LoopsClient {
    *
    * @param {string} email The email address of the contact.
    * @param {Object} [properties] All other contact properties, including custom properties.
+   * @param {Object} [mailingLists] An object of mailing list IDs and boolean subscription statuses.
    *
    * @see https://loops.so/docs/api-reference/create-contact
    *
@@ -170,9 +171,10 @@ class LoopsClient {
    */
   async createContact(
     email: string,
-    properties?: ContactProperties
+    properties?: ContactProperties,
+    mailingLists?: Record<string, boolean>
   ): Promise<ContactSuccessResponse | ErrorResponse> {
-    const payload = { email, ...properties };
+    const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
       path: "v1/contacts/create",
       method: "POST",
@@ -185,6 +187,7 @@ class LoopsClient {
    *
    * @param {string} email The email address of the contact.
    * @param {Object} properties All other contact properties, including custom properties.
+   * @param {Object} [mailingLists] An object of mailing list IDs and boolean subscription statuses.
    *
    * @see https://loops.so/docs/api-reference/update-contact
    *
@@ -192,9 +195,10 @@ class LoopsClient {
    */
   async updateContact(
     email: string,
-    properties: ContactProperties
+    properties: ContactProperties,
+    mailingLists?: Record<string, boolean>
   ): Promise<ContactSuccessResponse | ErrorResponse> {
-    const payload = { email, ...properties };
+    const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
       path: "v1/contacts/update",
       method: "PUT",
@@ -283,6 +287,7 @@ class LoopsClient {
    * @param {string} params.eventName The name of the event.
    * @param {Object} [params.contactProperties] Properties to update the contact with, including custom properties.
    * @param {Object} [params.eventProperties] Event properties, made available in emails triggered by the event.
+   * @param {Object} [params.mailingLists] An object of mailing list IDs and boolean subscription statuses.
    *
    * @see https://loops.so/docs/api-reference/send-event
    *
@@ -294,12 +299,14 @@ class LoopsClient {
     eventName,
     contactProperties,
     eventProperties,
+    mailingLists,
   }: {
     email?: string;
     userId?: string;
     eventName: string;
     contactProperties?: ContactProperties;
     eventProperties?: EventProperties;
+    mailingLists?: Record<string, boolean>;
   }): Promise<EventResponse> {
     if (!userId && !email)
       throw "You must provide an `email` or `userId` value.";
@@ -308,10 +315,12 @@ class LoopsClient {
       userId?: string;
       eventName: string;
       eventProperties?: EventProperties;
+      mailingLists?: Record<string, boolean>;
     } = {
       eventName,
       ...contactProperties,
       eventProperties,
+      mailingLists,
     };
     if (email) payload["email"] = email;
     if (userId) payload["userId"] = userId;

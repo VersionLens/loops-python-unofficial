@@ -72,10 +72,11 @@ Create a new contact.
 
 #### Parameters
 
-| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`      | string | Yes      | If a contact already exists with this email address, an error response will be returned.                                                                                                                                                                                                                                                                                                  |
-| `properties` | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| Name           | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`        | string | Yes      | If a contact already exists with this email address, an error response will be returned.                                                                                                                                                                                                                                                                                                  |
+| `properties`   | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| `mailingLists` | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                          |
 
 #### Examples
 
@@ -86,7 +87,15 @@ const contactProperties = {
   firstName: "Bob" /* Default property */,
   favoriteColor: "Red" /* Custom property */,
 };
-const resp = await loops.createContact("hello@gmail.com", contactProperties);
+const mailingLists = {
+  list_123: true,
+  list_456: false,
+};
+const resp = await loops.createContact(
+  "hello@gmail.com",
+  contactProperties,
+  mailingLists
+);
 ```
 
 #### Response
@@ -119,10 +128,11 @@ Note: To update a contact's email address, the contact requires a `userId` value
 
 #### Parameters
 
-| Name         | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`      | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created using the email and properties in this request.                                                                                                                                                                                                                 |
-| `properties` | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| Name           | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email`        | string | Yes      | The email address of the contact to update. If there is no contact with this email address, a new contact will be created using the email and properties in this request.                                                                                                                                                                                                                 |
+| `properties`   | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
+| `mailingLists` | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                          |
 
 #### Example
 
@@ -301,6 +311,7 @@ Send an event to trigger an email in Loops. [Read more about events](https://loo
 | `eventName`         | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `contactProperties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 | `eventProperties`   | object | No       | An object containing event properties, which will be made availabe in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                               |
+| `mailingLists`      | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                                    |
 
 #### Examples
 
@@ -317,6 +328,10 @@ const resp = await loops.sendEvent({
     username: "user1234",
     signupDate: "2024-03-21T10:09:23Z",
   },
+  mailingLists: {
+    "list_123": true,
+    "list_456": false
+  }
 });
 
 // In this case with both email and userId present, the system will look for a contact with either a
