@@ -329,9 +329,9 @@ const resp = await loops.sendEvent({
     signupDate: "2024-03-21T10:09:23Z",
   },
   mailingLists: {
-    "list_123": true,
-    "list_456": false
-  }
+    list_123: true,
+    list_456: false,
+  },
 });
 
 // In this case with both email and userId present, the system will look for a contact with either a
@@ -489,6 +489,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v2.1.1` (Jun 20, 2024) - Added support for mailing lists in [`createContact()`](#createcontact), [`updateContact()`](#updatecontact) and [`sendEvent()`](#sendevent).
 - `v2.1.0` (Jun 19, 2024) - Added support for new [List mailing lists](#getmailinglists) endpoint.
 - `v2.0.0` (Apr 19, 2024)
   - Added `userId` as a parameter to [`findContact()`](#findcontact). This includes a breaking change for the `findContact()` parameters.
