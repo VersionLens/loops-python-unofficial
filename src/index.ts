@@ -336,7 +336,9 @@ class LoopsClient {
    *
    * @param {string} transactionalId The ID of the transactional email to send.
    * @param {string} email The email address of the recipient.
+   * @param {boolean} [addToAudience] Create a contact in your audience using the provided email address (if one doesn't already exist).
    * @param {Object} [dataVariables] Data variables as defined by the transational email template.
+   * @param {Object[]} [attachments] File(s) to be sent along with the email message.
    *
    * @see https://loops.so/docs/api-reference/send-transactional-email
    *
@@ -345,15 +347,17 @@ class LoopsClient {
   async sendTransactionalEmail(
     transactionalId: string,
     email: string,
+    addToAudience?: boolean,
     dataVariables?: TransactionalVariables,
     attachments?: Array<TransactionalAttachment>
   ): Promise<TransactionalResponse> {
     const payload: {
       transactionalId: string;
       email: string;
+      addToAudience?: boolean;
       dataVariables?: TransactionalVariables;
       attachments?: Array<TransactionalAttachment>;
-    } = { transactionalId, email };
+    } = { transactionalId, email, addToAudience };
     if (dataVariables) payload["dataVariables"] = dataVariables;
     if (attachments) payload["attachments"] = attachments;
     return this._makeQuery({

@@ -381,6 +381,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 | --------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `transactionalId`           | string   | Yes      | The ID of the transactional email to send.                                                                                                                                                       |
 | `email`                     | string   | Yes      | The email address of the recipient.                                                                                                                                                              |
+| `addToAudience`             | boolean  | No       | If `true`, a contact will be created in your audience using the `email` value (if a matching contact doesn’t already exist).                                                                     |
 | `dataVariables`             | object   | No       | An object containing data as defined by the data variables added to the transactional email template.<br />Values can be of type `string` or `number`.                                           |
 | `attachments`               | object[] | No       | A list of attachments objects.<br />**Please note**: Attachments need to be enabled on your account before using them with the API. [Read more](https://loops.so/docs/transactional/attachments) |
 | `attachments[].filename`    | string   | No       | The name of the file, shown in email clients.                                                                                                                                                    |
@@ -489,6 +490,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v2.2.0` (Jul 2, 2024) - Added new `addToAudience` option to [`sendTransactionalEmail()`](#sendtransactionalemail).
 - `v2.1.1` (Jun 20, 2024) - Added support for mailing lists in [`createContact()`](#createcontact), [`updateContact()`](#updatecontact) and [`sendEvent()`](#sendevent).
 - `v2.1.0` (Jun 19, 2024) - Added support for new [List mailing lists](#getmailinglists) endpoint.
 - `v2.0.0` (Apr 19, 2024)
