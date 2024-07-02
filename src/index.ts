@@ -334,32 +334,37 @@ class LoopsClient {
   /**
    * Send a transactional email.
    *
-   * @param {string} transactionalId The ID of the transactional email to send.
-   * @param {string} email The email address of the recipient.
-   * @param {boolean} [addToAudience] Create a contact in your audience using the provided email address (if one doesn't already exist).
-   * @param {Object} [dataVariables] Data variables as defined by the transational email template.
-   * @param {Object[]} [attachments] File(s) to be sent along with the email message.
+   * @param {Object} params
+   * @param {string} params.transactionalId The ID of the transactional email to send.
+   * @param {string} params.email The email address of the recipient.
+   * @param {boolean} [params.addToAudience] Create a contact in your audience using the provided email address (if one doesn't already exist).
+   * @param {Object} [params.dataVariables] Data variables as defined by the transational email template.
+   * @param {Object[]} [params.attachments] File(s) to be sent along with the email message.
    *
    * @see https://loops.so/docs/api-reference/send-transactional-email
    *
    * @returns {Object} Confirmation or error response (JSON)
    */
-  async sendTransactionalEmail(
-    transactionalId: string,
-    email: string,
-    addToAudience?: boolean,
-    dataVariables?: TransactionalVariables,
-    attachments?: Array<TransactionalAttachment>
-  ): Promise<TransactionalResponse> {
-    const payload: {
-      transactionalId: string;
-      email: string;
-      addToAudience?: boolean;
-      dataVariables?: TransactionalVariables;
-      attachments?: Array<TransactionalAttachment>;
-    } = { transactionalId, email, addToAudience };
-    if (dataVariables) payload["dataVariables"] = dataVariables;
-    if (attachments) payload["attachments"] = attachments;
+  async sendTransactionalEmail({
+    transactionalId,
+    email,
+    addToAudience,
+    dataVariables,
+    attachments,
+  }: {
+    transactionalId: string;
+    email: string;
+    addToAudience?: boolean;
+    dataVariables?: TransactionalVariables;
+    attachments?: Array<TransactionalAttachment>;
+  }): Promise<TransactionalResponse> {
+    const payload = {
+      transactionalId,
+      email,
+      addToAudience,
+      dataVariables,
+      attachments,
+    };
     return this._makeQuery({
       path: "v1/transactional",
       method: "POST",
