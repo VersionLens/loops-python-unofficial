@@ -40,7 +40,7 @@ type Contact = {
   /**
    * The source the contact was created from.
    */
-  source: string;
+  source: string | null;
   /**
    * Whether the contact will receive campaign and loops emails.
    */
@@ -48,12 +48,12 @@ type Contact = {
   /**
    * The contact's user group (used to segemnt users when sending emails).
    */
-  userGroup: string;
+  userGroup: string | null;
   /**
    * A unique user ID (for example, from an external application).
    */
   userId: string | null;
-} & Record<string, any>;
+} & Record<string, string | number | boolean | null>;
 
 interface EventSuccessResponse {
   success: boolean;
@@ -92,7 +92,7 @@ type TransactionalResponse =
   | TransactionalError
   | TransactionalNestedError;
 
-type ContactProperties = Record<string, string | number | boolean>;
+type ContactProperties = Record<string, string | number | boolean | null>;
 
 type EventProperties = Record<string, string | number | boolean>;
 
