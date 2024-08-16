@@ -113,6 +113,22 @@ interface TransactionalAttachment {
   data: string;
 }
 
+interface MailingList {
+  /**
+   * The ID of the list.
+   */
+  id: string;
+  /**
+   * The name of the list.
+   */
+  name: string;
+  /**
+   * Whether the list is public (true) or private (false).
+   * @see https://loops.so/docs/contacts/mailing-lists#list-visibility
+   */
+  isPublic: boolean;
+}
+
 class LoopsClient {
   apiKey: string;
   apiRoot = "https://app.loops.so/api/";
@@ -272,7 +288,7 @@ class LoopsClient {
    *
    * @returns {Object} List of mailing lists (JSON)
    */
-  async getMailingLists(): Promise<Record<"id" | "name", string>[]> {
+  async getMailingLists(): Promise<MailingList[]> {
     return this._makeQuery({
       path: "v1/lists",
     });

@@ -277,7 +277,7 @@ const resp = await loops.getMailingLists();
 
 #### Response
 
-This method will return a list of mailing list objects containing `id` and `name` attributes.
+This method will return a list of mailing list objects containing `id`, `name` and `isPublic` attributes.
 
 If your account has no mailing lists, an empty list will be returned.
 
@@ -285,11 +285,13 @@ If your account has no mailing lists, an empty list will be returned.
 [
   {
     "id": "list_123",
-    "name": "Main list"
+    "name": "Main list",
+    "isPublic": true
   },
   {
     "id": "list_456",
-    "name": "Investors"
+    "name": "Investors",
+    "isPublic": false
   }
 ]
 ```
@@ -490,6 +492,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v3.1.1` (Aug 16, 2024) - Support for a new `isPublic` attribute in [`getMailingLists()`](#getmailinglists).
 - `v3.1.0` (Aug 12, 2024) - The SDK now accepts `null` as a value for contact properties in `createContact()`, `updateContact()` and `sendEvent()`, which allows you to reset/empty properties.
 - `v3.0.0` (Jul 2, 2024) - [`sendTransactionalEmail()`](#sendtransactionalemail) now accepts an object instead of separate parameters (breaking change).
 - `v2.2.0` (Jul 2, 2024) - Deprecated. Added new `addToAudience` option to [`sendTransactionalEmail()`](#sendtransactionalemail).
