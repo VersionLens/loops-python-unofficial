@@ -88,8 +88,8 @@ const contactProperties = {
   favoriteColor: "Red" /* Custom property */,
 };
 const mailingLists = {
-  list_123: true,
-  list_456: false,
+  cm06f5v0e45nf0ml5754o9cix: true,
+  cm16k73gq014h0mmj5b6jdi9r: false,
 };
 const resp = await loops.createContact(
   "hello@gmail.com",
@@ -209,6 +209,9 @@ If no contact is found, an empty list will be returned.
     "subscribed": true,
     "userGroup": "",
     "userId": "12345",
+    "mailingLists": {
+      "cm06f5v0e45nf0ml5754o9cix": true
+    },
     "favoriteColor": "Blue" /* Custom property */
   }
 ]
@@ -284,12 +287,12 @@ If your account has no mailing lists, an empty list will be returned.
 ```json
 [
   {
-    "id": "list_123",
+    "id": "cm06f5v0e45nf0ml5754o9cix",
     "name": "Main list",
     "isPublic": true
   },
   {
-    "id": "list_456",
+    "id": "cm16k73gq014h0mmj5b6jdi9r",
     "name": "Investors",
     "isPublic": false
   }
@@ -331,8 +334,8 @@ const resp = await loops.sendEvent({
     signupDate: "2024-03-21T10:09:23Z",
   },
   mailingLists: {
-    list_123: true,
-    list_456: false,
+    cm06f5v0e45nf0ml5754o9cix: true,
+    cm16k73gq014h0mmj5b6jdi9r: false,
   },
 });
 
