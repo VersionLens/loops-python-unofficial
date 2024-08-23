@@ -492,6 +492,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v3.2.0` (Aug 23, 2024) - Added support for a new `mailingLists` attribute in [`findContact()`](#findcontact).
 - `v3.1.1` (Aug 16, 2024) - Support for a new `isPublic` attribute in [`getMailingLists()`](#getmailinglists).
 - `v3.1.0` (Aug 12, 2024) - The SDK now accepts `null` as a value for contact properties in `createContact()`, `updateContact()` and `sendEvent()`, which allows you to reset/empty properties.
 - `v3.0.0` (Jul 2, 2024) - [`sendTransactionalEmail()`](#sendtransactionalemail) now accepts an object instead of separate parameters (breaking change).

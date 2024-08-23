@@ -53,6 +53,10 @@ type Contact = {
    * A unique user ID (for example, from an external application).
    */
   userId: string | null;
+  /**
+   * Mailing lists the contact is subscribed to.
+   */
+  mailingLists: Record<string, true>;
 } & Record<string, string | number | boolean | null>;
 
 interface EventSuccessResponse {
