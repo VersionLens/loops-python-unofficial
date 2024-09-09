@@ -53,6 +53,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 
 ## Methods
 
+- [testApiKey()](#testapikey)
 - [createContact()](#createcontact)
 - [updateContact()](#updatecontact)
 - [findContact()](#findcontact)
@@ -61,6 +62,41 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [sendEvent()](#sendevent)
 - [sendTransactionalEmail()](#sendtransactionalemail)
 - [getCustomFields()](#getcustomfields)
+
+---
+
+### testApiKey()
+
+Test that an API key is valid.
+
+[API Reference](https://loops.so/docs/api-reference/api-key)
+
+#### Parameters
+
+None
+
+#### Example
+
+```javascript
+const resp = await loops.testApiKey();
+```
+
+#### Response
+
+This method will return a success or error message:
+
+```json
+{
+  "success": true,
+  "teamName": "My team"
+}
+```
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
 
 ---
 
@@ -495,6 +531,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v3.3.0` (Sep 9, 2024) - Added [`testApiKey()`](#testapikey) method.
 - `v3.2.0` (Aug 23, 2024) - Added support for a new `mailingLists` attribute in [`findContact()`](#findcontact).
 - `v3.1.1` (Aug 16, 2024) - Support for a new `isPublic` attribute in [`getMailingLists()`](#getmailinglists).
 - `v3.1.0` (Aug 12, 2024) - The SDK now accepts `null` as a value for contact properties in `createContact()`, `updateContact()` and `sendEvent()`, which allows you to reset/empty properties.

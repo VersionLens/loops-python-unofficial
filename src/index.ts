@@ -5,6 +5,17 @@ interface QueryOptions {
   params?: Record<string, string>;
 }
 
+interface ApiKeySuccessResponse {
+  success: true;
+  teamName: string;
+}
+
+interface ApiKeyErrorResponse {
+  error: "Invalid API key";
+}
+
+type ApiKeyResponse = ApiKeySuccessResponse | ApiKeyErrorResponse;
+
 interface ContactSuccessResponse {
   success: true;
   id: string;
@@ -176,6 +187,19 @@ class LoopsClient {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * Test an API key.
+   *
+   * @see https://loops.so/docs/api-reference/api-key
+   *
+   * @returns {Object} Success or error message (JSON)
+   */
+  async testApiKey(): Promise<ApiKeyResponse> {
+    return this._makeQuery({
+      path: "v1/api-key",
+    });
   }
 
   /**
