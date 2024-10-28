@@ -21,7 +21,10 @@
   },
   "files": [
     "./dist/*",
-    "README.md"
+    "./.github/*",
+    "README.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "repository": {
     "type": "git",
