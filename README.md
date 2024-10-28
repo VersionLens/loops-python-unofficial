@@ -553,3 +553,9 @@ If your account has no custom fields, an empty list will be returned.
 - `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
 - `v0.1.2` (Dec 6, 2023) - Improved transactional error types.
 - `v0.1.1` (Nov 1, 2023) - Initial release.
+
+---
+
+## Contributing
+
+Bug reports and pull requests are welcome. Please read our [Contributing Guidelines](CONTRIBUTING.md).
