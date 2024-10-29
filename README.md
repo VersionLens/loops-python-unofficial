@@ -34,7 +34,7 @@ const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 const resp = await loops.createContact("email@provider.com");
 ```
 
-## Handling rate limits
+## Handling rate limits
 
 If you import `RateLimitExceededError` you can check for rate limit issues with your requests.
 
