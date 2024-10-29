@@ -34,6 +34,29 @@ const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 const resp = await loops.createContact("email@provider.com");
 ```
 
+## Handling rate limits
+
+If you import `RateLimitExceededError` you can check for rate limit issues with your requests.
+
+You can access details about the rate limits from the `limit` and `remaining` attributes.
+
+```javascript
+import { LoopsClient, RateLimitExceededError } from "loops";
+
+const loops = new LoopsClient(process.env.LOOPS_API_KEY);
+
+try {
+  const resp = await loops.createContact("email@provider.com");
+} catch (error) {
+  if (error instanceof RateLimitExceededError) {
+    console.log(`Rate limit exceeded (${error.limit} per second)`);
+    // Code here to re-try this request
+  } else {
+    // Handle other errors
+  }
+}
+```
+
 ## Default contact properties
 
 Each contact in Loops has a set of default properties. These will always be returned in API results.
@@ -531,6 +554,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v3.4.0` (Oct 29, 2024) - Added rate limit handling with [`RateLimitExceededError`](#handling-rate-limits).
 - `v3.3.0` (Sep 9, 2024) - Added [`testApiKey()`](#testapikey) method.
 - `v3.2.0` (Aug 23, 2024) - Added support for a new `mailingLists` attribute in [`findContact()`](#findcontact).
 - `v3.1.1` (Aug 16, 2024) - Support for a new `isPublic` attribute in [`getMailingLists()`](#getmailinglists).

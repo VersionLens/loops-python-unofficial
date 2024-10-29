@@ -144,6 +144,17 @@ interface MailingList {
   isPublic: boolean;
 }
 
+class RateLimitExceededError extends Error {
+  limit: number;
+  remaining: number;
+  constructor(limit: number, remaining: number) {
+    super(`Rate limit of ${limit} requests per second exceeded.`);
+    this.name = "RateLimitExceededError";
+    this.limit = limit;
+    this.remaining = remaining;
+  }
+}
+
 class LoopsClient {
   apiKey: string;
   apiRoot = "https://app.loops.so/api/";
@@ -183,6 +194,28 @@ class LoopsClient {
         headers,
         body: payload ? JSON.stringify(payload) : undefined,
       });
+
+      // Handle rate limiting
+      if (response.status === 429) {
+        const limit = parseInt(
+          response.headers.get("x-ratelimit-limit") || "10",
+          10
+        );
+        const remaining = parseInt(
+          response.headers.get("x-ratelimit-remaining") || "10",
+          10
+        );
+        throw new RateLimitExceededError(limit, remaining);
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}. ${
+            errorData.message || ""
+          }`
+        );
+      }
       return await response.json();
     } catch (error) {
       throw error;
@@ -430,4 +463,4 @@ class LoopsClient {
   }
 }
 
-export { LoopsClient };
+export { LoopsClient, RateLimitExceededError };
