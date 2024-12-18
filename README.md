@@ -339,7 +339,7 @@ const resp = await loops.getMailingLists();
 
 #### Response
 
-This method will return a list of mailing list objects containing `id`, `name` and `isPublic` attributes.
+This method will return a list of mailing list objects containing `id`, `name`, `description` and `isPublic` attributes.
 
 If your account has no mailing lists, an empty list will be returned.
 
@@ -348,11 +348,13 @@ If your account has no mailing lists, an empty list will be returned.
   {
     "id": "cm06f5v0e45nf0ml5754o9cix",
     "name": "Main list",
+    "description": "All customers."
     "isPublic": true
   },
   {
     "id": "cm16k73gq014h0mmj5b6jdi9r",
     "name": "Investors",
+    "description": null,
     "isPublic": false
   }
 ]
@@ -554,6 +556,7 @@ If your account has no custom fields, an empty list will be returned.
 
 ## Version history
 
+- `v3.4.1` (Dec 18, 2024) - Support for a new `description` attribute in [`getMailingLists()`](#getmailinglists).
 - `v3.4.0` (Oct 29, 2024) - Added rate limit handling with [`RateLimitExceededError`](#handling-rate-limits).
 - `v3.3.0` (Sep 9, 2024) - Added [`testApiKey()`](#testapikey) method.
 - `v3.2.0` (Aug 23, 2024) - Added support for a new `mailingLists` attribute in [`findContact()`](#findcontact).

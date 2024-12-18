@@ -138,6 +138,10 @@ interface MailingList {
    */
   name: string;
   /**
+   * The list's description.
+   */
+  description: string | null;
+  /**
    * Whether the list is public (true) or private (false).
    * @see https://loops.so/docs/contacts/mailing-lists#list-visibility
    */
