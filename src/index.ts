@@ -70,16 +70,15 @@ type Contact = {
   mailingLists: Record<string, true>;
 } & Record<string, string | number | boolean | null>;
 
+interface ContactPropertySuccessResponse {
+  success: boolean;
+}
+
 interface EventSuccessResponse {
   success: boolean;
 }
 
-interface EventErrorResponse {
-  success: false;
-  message: string;
-}
-
-type EventResponse = EventSuccessResponse | EventErrorResponse;
+type EventResponse = EventSuccessResponse | ErrorResponse;
 
 interface TransactionalSuccess {
   success: true;
@@ -159,6 +158,22 @@ class RateLimitExceededError extends Error {
   }
 }
 
+class APIError extends Error {
+  statusCode: number;
+  json: Record<string, unknown>;
+  constructor(statusCode: number, json: Record<string, unknown>) {
+    super(`${statusCode}${json.message ? ` - ${json.message}` : ""}`);
+    this.name = "APIError";
+    this.statusCode = statusCode;
+    this.json = json;
+
+    // This captures the proper stack trace in most environments
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, APIError);
+    }
+  }
+}
+
 class LoopsClient {
   apiKey: string;
   apiRoot = "https://app.loops.so/api/";
@@ -184,6 +199,7 @@ class LoopsClient {
   }: QueryOptions) {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${this.apiKey}`);
+    headers.set("Content-Type", "application/json");
 
     const url = new URL(path, this.apiRoot);
     if (params && method === "GET") {
@@ -199,8 +215,8 @@ class LoopsClient {
         body: payload ? JSON.stringify(payload) : undefined,
       });
 
-      // Handle rate limiting
       if (response.status === 429) {
+        // Handle rate limiting
         const limit = parseInt(
           response.headers.get("x-ratelimit-limit") || "10",
           10
@@ -212,14 +228,12 @@ class LoopsClient {
         throw new RateLimitExceededError(limit, remaining);
       }
 
+      // All other status codes from API, throw an error
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `API request failed: ${response.status} ${response.statusText}. ${
-            errorData.message || ""
-          }`
-        );
+        const json = await response.json();
+        throw new APIError(response.status, json);
       }
+
       return await response.json();
     } catch (error) {
       throw error;
@@ -347,6 +361,48 @@ class LoopsClient {
   }
 
   /**
+   * Create a new contact property.
+   *
+   * @param {string} name The name of the property. Should be in camelCase like "planName".
+   * @param {"string" | "number" | "boolean" | "date"} type The property's value type.
+   *
+   * @see https://loops.so/docs/api-reference/create-contact-property
+   *
+   * @returns {Object} Contact property record or error response (JSON)
+   */
+  async createContactProperty(
+    name: string,
+    type: "string" | "number" | "boolean" | "date"
+  ): Promise<ContactPropertySuccessResponse | ErrorResponse> {
+    return this._makeQuery({
+      path: "v1/contacts/properties",
+      method: "POST",
+      payload: {
+        ["name"]: name,
+        ["type"]: type,
+      },
+    });
+  }
+
+  /**
+   * Get contact properties.
+   *
+   * @param {"all" | "custom"} [list] Return all or just custom properties.
+   *
+   * @see https://loops.so/docs/api-reference/list-contact-properties
+   *
+   * @returns {Object} List of contact properties (JSON)
+   */
+  async getCustomProperties(
+    list?: "all" | "custom"
+  ): Promise<Record<"key" | "label" | "type", string>[]> {
+    return this._makeQuery({
+      path: "v1/contacts/properties",
+      params: { list: list || "all" },
+    });
+  }
+
+  /**
    * Get mailing lists.
    *
    * @see https://loops.so/docs/api-reference/list-mailing-lists
@@ -452,19 +508,6 @@ class LoopsClient {
       payload,
     });
   }
-
-  /**
-   * Get custom fields/properties.
-   *
-   * @see https://loops.so/docs/api-reference/list-custom-fields
-   *
-   * @returns {Object} List of custom fields (JSON)
-   */
-  async getCustomFields(): Promise<Record<"key" | "label" | "type", string>[]> {
-    return this._makeQuery({
-      path: "v1/contacts/customFields",
-    });
-  }
 }
 
-export { LoopsClient, RateLimitExceededError };
+export { LoopsClient, RateLimitExceededError, APIError };

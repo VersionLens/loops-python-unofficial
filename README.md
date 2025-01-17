@@ -27,11 +27,23 @@ See the API documentation to learn more about [rate limiting](https://loops.so/d
 ## Usage
 
 ```javascript
-import { LoopsClient } from "loops";
+import { LoopsClient, APIError } from "loops";
 
 const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 
-const resp = await loops.createContact("email@provider.com");
+try {
+  const resp = await loops.createContact("email@provider.com");
+  // resp.success and resp.id available when successful
+} catch (error) {
+  if (error instanceof APIError) {
+    // JSON returned by the API is in error.json and the HTTP code is in error.statusCode
+    // Error messages explaining the issue can be found in error.json.message
+    console.log(error.json);
+    console.log(error.statusCode);
+  } else {
+    // Non-API errors
+  }
+}
 ```
 
 ## Handling rate limits
@@ -41,7 +53,7 @@ If you import `RateLimitExceededError` you can check for rate limit issues with 
 You can access details about the rate limits from the `limit` and `remaining` attributes.
 
 ```javascript
-import { LoopsClient, RateLimitExceededError } from "loops";
+import { LoopsClient, APIError, RateLimitExceededError } from "loops";
 
 const loops = new LoopsClient(process.env.LOOPS_API_KEY);
 
@@ -81,10 +93,11 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [updateContact()](#updatecontact)
 - [findContact()](#findcontact)
 - [deleteContact()](#deletecontact)
+- [createContactProperty()](#createcontactproperty)
+- [getContactProperties()](#getcontactproperties)
 - [getMailingLists()](#getmailinglists)
 - [sendEvent()](#sendevent)
 - [sendTransactionalEmail()](#sendtransactionalemail)
-- [getCustomFields()](#getcustomfields)
 
 ---
 
@@ -106,8 +119,6 @@ const resp = await loops.testApiKey();
 
 #### Response
 
-This method will return a success or error message:
-
 ```json
 {
   "success": true,
@@ -115,7 +126,10 @@ This method will return a success or error message:
 }
 ```
 
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
 ```json
+HTTP 401 Unauthorized
 {
   "error": "Invalid API key"
 }
@@ -159,8 +173,6 @@ const resp = await loops.createContact(
 
 #### Response
 
-This method will return a success or error message:
-
 ```json
 {
   "success": true,
@@ -168,7 +180,10 @@ This method will return a success or error message:
 }
 ```
 
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "message": "An error message here."
@@ -210,8 +225,6 @@ const resp = await loops.updateContact("newemail@gmail.com", {
 
 #### Response
 
-This method will return a success or error message:
-
 ```json
 {
   "success": true,
@@ -219,7 +232,10 @@ This method will return a success or error message:
 }
 ```
 
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "message": "An error message here."
@@ -303,8 +319,6 @@ const resp = await loops.deleteContact({ userId: "12345" });
 
 #### Response
 
-This method will return a success or error message:
-
 ```json
 {
   "success": true,
@@ -312,11 +326,149 @@ This method will return a success or error message:
 }
 ```
 
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "message": "An error message here."
 }
+```
+
+```json
+HTTP 404 Not Found
+{
+  "success": false,
+  "message": "An error message here."
+}
+```
+
+---
+
+### createContactProperty()
+
+Create a new contact property.
+
+[API Reference](https://loops.so/docs/api-reference/create-contact-property)
+
+#### Parameters
+
+| Name    | Type   | Required | Notes                                                                                  |
+| ------- | ------ | -------- | -------------------------------------------------------------------------------------- |
+| `name`  | string | Yes      | The name of the property. Should be in camelCase, like `planName` or `favouriteColor`. |
+| `ttype` | string | Yes      | The property's value type.<br />Can be one of `string`, `number`, `boolean` or `date`. |
+
+#### Examples
+
+```javascript
+const resp = await loops.createContactProperty("planName", "string");
+```
+
+#### Response
+
+```json
+{
+  "success": true
+}
+```
+
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
+```json
+HTTP 400 Bad Request
+{
+  "success": false,
+  "message": "An error message here."
+}
+```
+
+---
+
+### getContactProperties()
+
+Get a list of your account's contact properties.
+
+[API Reference](https://loops.so/docs/api-reference/list-contact-properties)
+
+#### Parameters
+
+You must use one parameter in the request.
+
+| Name   | Type   | Required | Notes                                                           |
+| ------ | ------ | -------- | --------------------------------------------------------------- |
+| `list` | string | No       | Use "custom" to retrieve only your account's custom properties. |
+
+#### Example
+
+```javascript
+const resp = await loops.getContactProperties();
+
+const resp = await loops.getContactProperties("custom");
+```
+
+#### Response
+
+This method will return a list of contact property objects containing `key`, `label` and `type` attributes.
+
+```json
+[
+  {
+    "key": "firstName",
+    "label": "First Name",
+    "type": "string"
+  },
+  {
+    "key": "lastName",
+    "label": "Last Name",
+    "type": "string"
+  },
+  {
+    "key": "email",
+    "label": "Email",
+    "type": "string"
+  },
+  {
+    "key": "notes",
+    "label": "Notes",
+    "type": "string"
+  },
+  {
+    "key": "source",
+    "label": "Source",
+    "type": "string"
+  },
+  {
+    "key": "userGroup",
+    "label": "User Group",
+    "type": "string"
+  },
+  {
+    "key": "userId",
+    "label": "User Id",
+    "type": "string"
+  },
+  {
+    "key": "subscribed",
+    "label": "Subscribed",
+    "type": "boolean"
+  },
+  {
+    "key": "createdAt",
+    "label": "Created At",
+    "type": "date"
+  },
+  {
+    "key": "favoriteColor",
+    "label": "Favorite Color",
+    "type": "string"
+  },
+  {
+    "key": "plan",
+    "label": "Plan",
+    "type": "string"
+  }
+]
 ```
 
 ---
@@ -373,10 +525,10 @@ Send an event to trigger an email in Loops. [Read more about events](https://loo
 | Name                | Type   | Required | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ------------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `email`             | string | No       | The contact's email address. Required if `userId` is not present.                                                                                                                                                                                                                                                                                                                                                                                              |
-| `userId`            | string | No       | The contact's unique user ID. If you use `userID` without `email`, this value must have already been added to your contact in Loops. Required if `email` is not present.                                                                                                                                                                                                                                                                                       |
+| `userId`            | string | No       | The contact's unique user ID. If you use `userId` without `email`, this value must have already been added to your contact in Loops. Required if `email` is not present.                                                                                                                                                                                                                                                                                       |
 | `eventName`         | string | Yes      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `contactProperties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `null` (to reset a value), `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
-| `eventProperties`   | object | No       | An object containing event properties, which will be made availabe in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                                                          |
+| `eventProperties`   | object | No       | An object containing event properties, which will be made available in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                                                         |
 | `mailingLists`      | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                                                               |
 
 #### Examples
@@ -418,15 +570,16 @@ const resp = await loops.sendEvent({
 
 #### Response
 
-This method will return a success or error:
-
 ```json
 {
   "success": true
 }
 ```
 
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
+
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "message": "An error message here."
@@ -484,17 +637,16 @@ const resp = await loops.sendTransactionalEmail({
 
 #### Response
 
-This method will return a success or error message.
-
 ```json
 {
   "success": true
 }
 ```
 
-If there is a problem with the request, a descriptive error message will be returned:
+Error handling is done through the `APIError` class, which provides `statusCode` and `json` properties containing the API's error response details. For implementation examples, see the [Usage section](#usage).
 
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "path": "dataVariables",
@@ -503,6 +655,7 @@ If there is a problem with the request, a descriptive error message will be retu
 ```
 
 ```json
+HTTP 400 Bad Request
 {
   "success": false,
   "error": {
@@ -515,47 +668,12 @@ If there is a problem with the request, a descriptive error message will be retu
 
 ---
 
-### getCustomFields()
-
-Get a list of your account's custom fields. These are custom properties that can be added to contacts to store extra data. [Read more about contact properties](https://loops.so/docs/contacts/properties)
-
-[API Reference](https://loops.so/docs/api-reference/list-custom-fields)
-
-#### Parameters
-
-None
-
-#### Example
-
-```javascript
-const resp = await loops.getCustomFields();
-```
-
-#### Response
-
-This method will return a list of custom field objects containing `key`, `label` and `type` attributes.
-
-If your account has no custom fields, an empty list will be returned.
-
-```json
-[
-  {
-    "key": "favoriteColor",
-    "label": "Favorite Color",
-    "type": "string"
-  },
-  {
-    "key": "plan",
-    "label": "Plan",
-    "type": "string"
-  }
-]
-```
-
----
-
 ## Version history
 
+- `v4.0.0` (Jan 16, 2024)
+  - Added `APIError` to more easily understand API errors. [See usage example](#usage).
+  - Added support for two new contact property endpoints: [List contact properties](#listcontactproperties) and [Create contact property](#createcontactproperty).
+  - Deprecated and removed the `getCustomFields()` method (you can now use [`listContactProperties()`](#listcontactproperties) instead).
 - `v3.4.1` (Dec 18, 2024) - Support for a new `description` attribute in [`getMailingLists()`](#getmailinglists).
 - `v3.4.0` (Oct 29, 2024) - Added rate limit handling with [`RateLimitExceededError`](#handling-rate-limits).
 - `v3.3.0` (Sep 9, 2024) - Added [`testApiKey()`](#testapikey) method.
