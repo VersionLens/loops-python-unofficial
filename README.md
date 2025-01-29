@@ -354,10 +354,10 @@ Create a new contact property.
 
 #### Parameters
 
-| Name    | Type   | Required | Notes                                                                                  |
-| ------- | ------ | -------- | -------------------------------------------------------------------------------------- |
-| `name`  | string | Yes      | The name of the property. Should be in camelCase, like `planName` or `favouriteColor`. |
-| `ttype` | string | Yes      | The property's value type.<br />Can be one of `string`, `number`, `boolean` or `date`. |
+| Name   | Type   | Required | Notes                                                                                  |
+| ------ | ------ | -------- | -------------------------------------------------------------------------------------- |
+| `name` | string | Yes      | The name of the property. Should be in camelCase, like `planName` or `favouriteColor`. |
+| `type` | string | Yes      | The property's value type.<br />Can be one of `string`, `number`, `boolean` or `date`. |
 
 #### Examples
 
@@ -392,8 +392,6 @@ Get a list of your account's contact properties.
 [API Reference](https://loops.so/docs/api-reference/list-contact-properties)
 
 #### Parameters
-
-You must use one parameter in the request.
 
 | Name   | Type   | Required | Notes                                                           |
 | ------ | ------ | -------- | --------------------------------------------------------------- |
