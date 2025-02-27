@@ -668,7 +668,7 @@ HTTP 400 Bad Request
 
 ## Version history
 
-- `v4.0.0` (Jan 16, 2024)
+- `v4.0.0` (Jan 16, 2025)
   - Added `APIError` to more easily understand API errors. [See usage example](#usage).
   - Added support for two new contact property endpoints: [List contact properties](#listcontactproperties) and [Create contact property](#createcontactproperty).
   - Deprecated and removed the `getCustomFields()` method (you can now use [`listContactProperties()`](#listcontactproperties) instead).
