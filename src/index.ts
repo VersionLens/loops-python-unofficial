@@ -147,6 +147,56 @@ interface MailingList {
   isPublic: boolean;
 }
 
+interface PaginationData {
+  /**
+   * Total results found.
+   */
+  totalResults: number;
+  /**
+   * The number of results returned in this response.
+   */
+  returnedResults: number;
+  /**
+   * The maximum number of results requested.
+   */
+  perPage: number;
+  /**
+   * Total number of pages.
+   */
+  totalPages: number;
+  /**
+   * The next cursor (for retrieving the next page of results using the `cursor` parameter), or `null` if there are no further pages.
+   */
+  nextCursor: string | null;
+  /**
+   * The URL of the next page of results, or `null` if there are no further pages.
+   */
+  nextPage: string | null;
+}
+
+interface TransactionalEmail {
+  /** The ID of the transactional email. */
+  id: string;
+  /**
+   * The name of the transactional email.
+   */
+  name: string;
+  /**
+   * The date the email was last updated in ECMA-262 date-time format.
+   * @see https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-time-string-format
+   */
+  lastUpdate: string;
+  /**
+   * Data variables in the transactional email.
+   */
+  dataVariables: string[];
+}
+
+interface ListTransactionalsResponse {
+  pagination: PaginationData;
+  data: TransactionalEmail[];
+}
+
 class RateLimitExceededError extends Error {
   limit: number;
   remaining: number;
@@ -506,6 +556,34 @@ class LoopsClient {
       path: "v1/transactional",
       method: "POST",
       payload,
+    });
+  }
+
+  /**
+   * List published transactional emails.
+   *
+   * @param {Object} params
+   * @param {number} [params.perPage] How many results to return in each request. Must be between 10 and 50. Defaults to 20.
+   * @param {string} [params.cursor] A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response.
+   *
+   * @see https://loops.so/docs/api-reference/list-transactional-emails
+   *
+   * @returns {Object} List of transactional emails (JSON)
+   */
+  async getTransactionalEmails({
+    perPage,
+    cursor,
+  }: {
+    perPage?: number;
+    cursor?: string;
+  } = {}): Promise<ListTransactionalsResponse> {
+    let params: { perPage: string; cursor?: string } = {
+      perPage: (perPage || 20).toString(),
+    };
+    if (cursor) params["cursor"] = cursor;
+    return this._makeQuery({
+      path: "v1/transactional",
+      params,
     });
   }
 }

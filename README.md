@@ -98,6 +98,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [getMailingLists()](#getmailinglists)
 - [sendEvent()](#sendevent)
 - [sendTransactionalEmail()](#sendtransactionalemail)
+- [getTransactionalEmails()](#gettransactionalemails)
 
 ---
 
@@ -666,8 +667,71 @@ HTTP 400 Bad Request
 
 ---
 
+### getTransactionalEmails()
+
+Get a list of published transactional emails.
+
+[API Reference](https://loops.so/docs/api-reference/list-transactional-emails)
+
+#### Parameters
+
+| Name      | Type    | Required | Notes                                                                                                                         |
+| --------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `perPage` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `cursor`  | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```javascript
+const resp = await loops.getTransactionalEmails();
+
+const resp = await loops.getTransactionalEmails({ perPage: 15 });
+```
+
+#### Response
+
+```json
+{
+  "pagination": {
+    "totalResults": 23,
+    "returnedResults": 20,
+    "perPage": 20,
+    "totalPages": 2,
+    "nextCursor": "clyo0q4wo01p59fsecyxqsh38",
+    "nextPage": "https://app.loops.so/api/v1/transactional?cursor=clyo0q4wo01p59fsecyxqsh38&perPage=20"
+  },
+  "data": [
+    {
+      "id": "clfn0k1yg001imo0fdeqg30i8",
+      "lastUpdated": "2023-11-06T17:48:07.249Z",
+      "dataVariables": []
+    },
+    {
+      "id": "cll42l54f20i1la0lfooe3z12",
+      "lastUpdated": "2025-02-02T02:56:28.845Z",
+      "dataVariables": [
+        "confirmationUrl"
+      ]
+    },
+    {
+      "id": "clw6rbuwp01rmeiyndm80155l",
+      "lastUpdated": "2024-05-14T19:02:52.000Z",
+      "dataVariables": [
+        "firstName",
+        "lastName",
+        "inviteLink"
+      ]
+    },
+    ...
+  ]
+}
+```
+
+---
+
 ## Version history
 
+- `v4.1.0` (Feb 27, 2025) - Support for new [List transactional emails](#gettransactionalemails) endpoint.
 - `v4.0.0` (Jan 16, 2025)
   - Added `APIError` to more easily understand API errors. [See usage example](#usage).
   - Added support for two new contact property endpoints: [List contact properties](#listcontactproperties) and [Create contact property](#createcontactproperty).
