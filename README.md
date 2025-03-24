@@ -1,5 +1,7 @@
 # Loops JavaScript/TypeScript SDK
 
+[![](https://img.shields.io/npm/dt/loops?style=social&label=Downloads)](https://www.npmjs.com/package/loops)
+
 ## Introduction
 
 This is the official JavaScript SDK for [Loops](https://loops.so), with full TypeScript support.
