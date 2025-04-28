@@ -18,6 +18,7 @@ type ApiKeyResponse = ApiKeySuccessResponse | ApiKeyErrorResponse;
 
 interface ContactSuccessResponse {
   success: true;
+  /** The ID of the contact. */
   id: string;
 }
 
@@ -78,8 +79,6 @@ interface EventSuccessResponse {
   success: boolean;
 }
 
-type EventResponse = EventSuccessResponse | ErrorResponse;
-
 interface TransactionalSuccess {
   success: true;
 }
@@ -100,11 +99,6 @@ interface TransactionalNestedError {
   };
   transactionalId?: string;
 }
-
-type TransactionalResponse =
-  | TransactionalSuccess
-  | TransactionalError
-  | TransactionalNestedError;
 
 type ContactProperties = Record<string, string | number | boolean | null>;
 
@@ -192,6 +186,15 @@ interface TransactionalEmail {
   dataVariables: string[];
 }
 
+interface ContactProperty {
+  /**
+   */
+  label: string;
+  /**
+   * The type of property.
+   */
+  type: "string" | "number" | "boolean" | "date";
+}
 interface ListTransactionalsResponse {
   pagination: PaginationData;
   data: TransactionalEmail[];
@@ -210,9 +213,16 @@ class RateLimitExceededError extends Error {
 
 class APIError extends Error {
   statusCode: number;
-  json: Record<string, unknown>;
-  constructor(statusCode: number, json: Record<string, unknown>) {
-    super(`${statusCode}${json.message ? ` - ${json.message}` : ""}`);
+  json: ErrorResponse | TransactionalError | TransactionalNestedError;
+    json: ErrorResponse | TransactionalError | TransactionalNestedError
+  ) {
+    let message: string | undefined;
+    if ("error" in json && json.error?.message) {
+      message = json.error.message;
+    } else if ("message" in json) {
+      message = json.message;
+    }
+    super(`${statusCode}${message ? ` - ${message}` : ""}`);
     this.name = "APIError";
     this.statusCode = statusCode;
     this.json = json;
@@ -318,7 +328,7 @@ class LoopsClient {
     email: string,
     properties?: ContactProperties,
     mailingLists?: Record<string, boolean>
-  ): Promise<ContactSuccessResponse | ErrorResponse> {
+  ): Promise<ContactSuccessResponse> {
     const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
       path: "v1/contacts/create",
@@ -342,7 +352,7 @@ class LoopsClient {
     email: string,
     properties: ContactProperties,
     mailingLists?: Record<string, boolean>
-  ): Promise<ContactSuccessResponse | ErrorResponse> {
+  ): Promise<ContactSuccessResponse> {
     const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
       path: "v1/contacts/update",
@@ -397,7 +407,7 @@ class LoopsClient {
   }: {
     email?: string;
     userId?: string;
-  }): Promise<DeleteSuccessResponse | ErrorResponse> {
+  }): Promise<DeleteSuccessResponse> {
     if (email && userId) throw "Only one parameter is permitted.";
     const payload: { email?: string; userId?: string } = {};
     if (email) payload["email"] = email;
@@ -423,7 +433,7 @@ class LoopsClient {
   async createContactProperty(
     name: string,
     type: "string" | "number" | "boolean" | "date"
-  ): Promise<ContactPropertySuccessResponse | ErrorResponse> {
+  ): Promise<ContactPropertySuccessResponse> {
     return this._makeQuery({
       path: "v1/contacts/properties",
       method: "POST",
@@ -445,7 +455,7 @@ class LoopsClient {
    */
   async getCustomProperties(
     list?: "all" | "custom"
-  ): Promise<Record<"key" | "label" | "type", string>[]> {
+  ): Promise<ContactProperty[]> {
     return this._makeQuery({
       path: "v1/contacts/properties",
       params: { list: list || "all" },
@@ -494,7 +504,7 @@ class LoopsClient {
     contactProperties?: ContactProperties;
     eventProperties?: EventProperties;
     mailingLists?: Record<string, boolean>;
-  }): Promise<EventResponse> {
+  }): Promise<EventSuccessResponse> {
     if (!userId && !email)
       throw "You must provide an `email` or `userId` value.";
     const payload: {
@@ -544,7 +554,7 @@ class LoopsClient {
     addToAudience?: boolean;
     dataVariables?: TransactionalVariables;
     attachments?: Array<TransactionalAttachment>;
-  }): Promise<TransactionalResponse> {
+  }): Promise<TransactionalSuccess> {
     const payload = {
       transactionalId,
       email,
