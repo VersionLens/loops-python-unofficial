@@ -1,7 +1,7 @@
 interface QueryOptions {
   path: `v1/${string}`;
   method?: "GET" | "POST" | "PUT";
-  payload?: Record<string, any>;
+  payload?: Record<string, unknown>;
   params?: Record<string, string>;
 }
 
@@ -13,8 +13,6 @@ interface ApiKeySuccessResponse {
 interface ApiKeyErrorResponse {
   error: "Invalid API key";
 }
-
-type ApiKeyResponse = ApiKeySuccessResponse | ApiKeyErrorResponse;
 
 interface ContactSuccessResponse {
   success: true;
@@ -188,6 +186,11 @@ interface TransactionalEmail {
 
 interface ContactProperty {
   /**
+   * The property's name.
+   */
+  key: string;
+  /**
+   * The human-friendly label for this property.
    */
   label: string;
   /**
@@ -195,6 +198,7 @@ interface ContactProperty {
    */
   type: "string" | "number" | "boolean" | "date";
 }
+
 interface ListTransactionalsResponse {
   pagination: PaginationData;
   data: TransactionalEmail[];
@@ -213,13 +217,29 @@ class RateLimitExceededError extends Error {
 
 class APIError extends Error {
   statusCode: number;
-  json: ErrorResponse | TransactionalError | TransactionalNestedError;
-    json: ErrorResponse | TransactionalError | TransactionalNestedError
+  json:
+    | ErrorResponse
+    | TransactionalError
+    | TransactionalNestedError
+    | ApiKeyErrorResponse;
+  constructor(
+    statusCode: number,
+    json:
+      | ErrorResponse
+      | TransactionalError
+      | TransactionalNestedError
+      | ApiKeyErrorResponse
   ) {
     let message: string | undefined;
-    if ("error" in json && json.error?.message) {
+    if (
+      "error" in json &&
+      typeof json.error === "object" &&
+      json.error?.message
+    ) {
       message = json.error.message;
-    } else if ("message" in json) {
+    } else if ("error" in json && typeof json.error === "string") {
+      message = json.error;
+    } else if ("message" in json && typeof json.message === "string") {
       message = json.message;
     }
     super(`${statusCode}${message ? ` - ${message}` : ""}`);
@@ -231,6 +251,13 @@ class APIError extends Error {
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, APIError);
     }
+  }
+}
+
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
   }
 }
 
@@ -251,12 +278,12 @@ class LoopsClient {
    * @param {Object} params.payload Payload for PUT and POST requests
    * @param {Object} params.params URL query parameters
    */
-  private async _makeQuery({
+  private async _makeQuery<T>({
     path,
     method = "GET",
     payload,
     params,
-  }: QueryOptions) {
+  }: QueryOptions): Promise<T> {
     const headers = new Headers();
     headers.set("Authorization", `Bearer ${this.apiKey}`);
     headers.set("Content-Type", "application/json");
@@ -264,7 +291,7 @@ class LoopsClient {
     const url = new URL(path, this.apiRoot);
     if (params && method === "GET") {
       Object.entries(params).forEach(([key, value]) =>
-        url.searchParams.append(key, value)
+        url.searchParams.append(key, value as string)
       );
     }
 
@@ -305,9 +332,9 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/api-key
    *
-   * @returns {Object} Success or error message (JSON)
+   * @returns {Object} Success response (JSON)
    */
-  async testApiKey(): Promise<ApiKeyResponse> {
+  async testApiKey(): Promise<ApiKeySuccessResponse> {
     return this._makeQuery({
       path: "v1/api-key",
     });
@@ -322,7 +349,7 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/create-contact
    *
-   * @returns {Object} Contact record or error response (JSON)
+   * @returns {Object} Contact record (JSON)
    */
   async createContact(
     email: string,
@@ -346,7 +373,7 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/update-contact
    *
-   * @returns {Object} Contact record or error response (JSON)
+   * @returns {Object} Contact record (JSON)
    */
   async updateContact(
     email: string,
@@ -379,11 +406,15 @@ class LoopsClient {
     email?: string;
     userId?: string;
   }): Promise<Contact[]> {
-    if (email && userId) throw "Only one parameter is permitted.";
+    if (email && userId)
+      throw new ValidationError("Only one parameter is permitted.");
+    if (!email && !userId)
+      throw new ValidationError(
+        "You must provide an `email` or `userId` value."
+      );
     const params: { email?: string; userId?: string } = {};
     if (email) params["email"] = email;
     else if (userId) params["userId"] = userId;
-    else throw "You must provide an `email` or `userId` value.";
     return this._makeQuery({
       path: "v1/contacts/find",
       params,
@@ -399,7 +430,7 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/delete-contact
    *
-   * @returns {Object} Confirmation or error response (JSON)
+   * @returns {Object} Confirmation (JSON)
    */
   async deleteContact({
     email,
@@ -408,11 +439,15 @@ class LoopsClient {
     email?: string;
     userId?: string;
   }): Promise<DeleteSuccessResponse> {
-    if (email && userId) throw "Only one parameter is permitted.";
+    if (email && userId)
+      throw new ValidationError("Only one parameter is permitted.");
+    if (!email && !userId)
+      throw new ValidationError(
+        "You must provide an `email` or `userId` value."
+      );
     const payload: { email?: string; userId?: string } = {};
     if (email) payload["email"] = email;
     else if (userId) payload["userId"] = userId;
-    else throw "You must provide an `email` or `userId` value.";
     return this._makeQuery({
       path: "v1/contacts/delete",
       method: "POST",
@@ -428,7 +463,7 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/create-contact-property
    *
-   * @returns {Object} Contact property record or error response (JSON)
+   * @returns {Object} Contact property record (JSON)
    */
   async createContactProperty(
     name: string,
@@ -540,7 +575,7 @@ class LoopsClient {
    *
    * @see https://loops.so/docs/api-reference/send-transactional-email
    *
-   * @returns {Object} Confirmation or error response (JSON)
+   * @returns {Object} Confirmation (JSON)
    */
   async sendTransactionalEmail({
     transactionalId,
@@ -598,4 +633,29 @@ class LoopsClient {
   }
 }
 
-export { LoopsClient, RateLimitExceededError, APIError };
+export {
+  LoopsClient,
+  RateLimitExceededError,
+  APIError,
+  ValidationError,
+  ApiKeySuccessResponse,
+  ApiKeyErrorResponse,
+  ContactSuccessResponse,
+  DeleteSuccessResponse,
+  ErrorResponse,
+  Contact,
+  ContactProperty,
+  ContactPropertySuccessResponse,
+  EventSuccessResponse,
+  TransactionalSuccess,
+  TransactionalError,
+  TransactionalNestedError,
+  ContactProperties,
+  EventProperties,
+  TransactionalVariables,
+  TransactionalAttachment,
+  MailingList,
+  PaginationData,
+  TransactionalEmail,
+  ListTransactionalsResponse,
+};
