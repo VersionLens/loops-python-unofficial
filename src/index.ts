@@ -50,7 +50,7 @@ type Contact = {
   /**
    * The source the contact was created from.
    */
-  source: string | null;
+  source: string;
   /**
    * Whether the contact will receive campaign and loops emails.
    */
@@ -58,7 +58,7 @@ type Contact = {
   /**
    * The contact's user group (used to segemnt users when sending emails).
    */
-  userGroup: string | null;
+  userGroup: string;
   /**
    * A unique user ID (for example, from an external application).
    */
@@ -101,6 +101,8 @@ interface TransactionalNestedError {
 type ContactProperties = Record<string, string | number | boolean | null>;
 
 type EventProperties = Record<string, string | number | boolean>;
+
+type MailingLists = Record<string, boolean>;
 
 type TransactionalVariables = Record<string, string | number>;
 
@@ -266,6 +268,9 @@ class LoopsClient {
   apiRoot = "https://app.loops.so/api/";
 
   constructor(apiKey: string) {
+    if (!apiKey) {
+      throw new Error("API key is required");
+    }
     this.apiKey = apiKey;
   }
 
@@ -354,7 +359,7 @@ class LoopsClient {
   async createContact(
     email: string,
     properties?: ContactProperties,
-    mailingLists?: Record<string, boolean>
+    mailingLists?: MailingLists
   ): Promise<ContactSuccessResponse> {
     const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
@@ -378,7 +383,7 @@ class LoopsClient {
   async updateContact(
     email: string,
     properties: ContactProperties,
-    mailingLists?: Record<string, boolean>
+    mailingLists?: MailingLists
   ): Promise<ContactSuccessResponse> {
     const payload = { email, ...properties, mailingLists };
     return this._makeQuery({
@@ -538,7 +543,7 @@ class LoopsClient {
     eventName: string;
     contactProperties?: ContactProperties;
     eventProperties?: EventProperties;
-    mailingLists?: Record<string, boolean>;
+    mailingLists?: MailingLists;
   }): Promise<EventSuccessResponse> {
     if (!userId && !email)
       throw "You must provide an `email` or `userId` value.";
@@ -658,4 +663,5 @@ export {
   PaginationData,
   TransactionalEmail,
   ListTransactionalsResponse,
+  MailingLists,
 };
