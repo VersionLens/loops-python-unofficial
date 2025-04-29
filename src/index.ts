@@ -179,7 +179,7 @@ interface TransactionalEmail {
    * The date the email was last updated in ECMA-262 date-time format.
    * @see https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-time-string-format
    */
-  lastUpdate: string;
+  lastUpdated: string;
   /**
    * Data variables in the transactional email.
    */
@@ -546,7 +546,9 @@ class LoopsClient {
     mailingLists?: MailingLists;
   }): Promise<EventSuccessResponse> {
     if (!userId && !email)
-      throw "You must provide an `email` or `userId` value.";
+      throw new ValidationError(
+        "You must provide an `email` or `userId` value."
+      );
     const payload: {
       email?: string;
       userId?: string;
