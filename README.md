@@ -733,6 +733,11 @@ const resp = await loops.getTransactionalEmails({ perPage: 15 });
 
 ## Version history
 
+- `v5.0.0` (Apr 29, 2025)
+  - Types are now exported so you can use them in your application.
+  - `ValidationError` is now thrown when paramters are not added correctly.
+  - `Error` is now returned if the API key is missing.
+  - Added tests.
 - `v4.1.0` (Feb 27, 2025) - Support for new [List transactional emails](#gettransactionalemails) endpoint.
 - `v4.0.0` (Jan 16, 2025)
   - Added `APIError` to more easily understand API errors. [See usage example](#usage).
