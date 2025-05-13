@@ -409,6 +409,69 @@ describe("LoopsClient", () => {
         })
       );
     });
+
+    it("should send event with idempotency key", async () => {
+      const eventData = {
+        email: "test@example.com",
+        eventName: "test_event",
+        headers: {
+          "Idempotency-Key": "unique_key_123",
+        },
+      };
+      const mockResponse = { success: true };
+
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const result = await client.sendEvent(eventData);
+
+      expect(result).toEqual(mockResponse);
+
+      // Get the actual fetch call arguments
+      const fetchCall = (fetch as jest.Mock).mock.calls[0];
+      const requestOptions = fetchCall[1];
+
+      // Verify headers using Headers object methods
+      const headers = requestOptions.headers;
+      expect(headers.get("Idempotency-Key")).toBe("unique_key_123");
+
+      // Verify the body doesn't contain idempotency key
+      expect(requestOptions.body).toBe(
+        JSON.stringify({
+          eventName: eventData.eventName,
+          email: eventData.email,
+        })
+      );
+    });
+
+    it("should send event without idempotency key when empty string", async () => {
+      const eventData = {
+        email: "test@example.com",
+        eventName: "test_event",
+        headers: {
+          "Idempotency-Key": "",
+        },
+      };
+      const mockResponse = { success: true };
+
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const result = await client.sendEvent(eventData);
+
+      expect(result).toEqual(mockResponse);
+
+      // Get the actual fetch call arguments
+      const fetchCall = (fetch as jest.Mock).mock.calls[0];
+      const requestOptions = fetchCall[1];
+
+      // Verify no header is set
+      expect(requestOptions.headers.get("Idempotency-Key")).toBeNull();
+    });
   });
 
   describe("sendTransactionalEmail", () => {

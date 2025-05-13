@@ -3,6 +3,7 @@ interface QueryOptions {
   method?: "GET" | "POST" | "PUT";
   payload?: Record<string, unknown>;
   params?: Record<string, string>;
+  headers?: Record<string, string>;
 }
 
 interface ApiKeySuccessResponse {
@@ -280,18 +281,28 @@ class LoopsClient {
    * @param {Object} params
    * @param {string} params.path Endpoint path
    * @param {string} params.method HTTP method
+   * @param {Object} params.headers Additional headers to send with the request
    * @param {Object} params.payload Payload for PUT and POST requests
    * @param {Object} params.params URL query parameters
    */
   private async _makeQuery<T>({
     path,
     method = "GET",
+    headers,
     payload,
     params,
   }: QueryOptions): Promise<T> {
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${this.apiKey}`);
-    headers.set("Content-Type", "application/json");
+    const h = new Headers();
+    h.set("Authorization", `Bearer ${this.apiKey}`);
+    h.set("Content-Type", "application/json");
+
+    if (headers) {
+      Object.entries(headers).forEach(([key, value]) => {
+        if (value !== "" && value !== undefined && value !== null) {
+          h.set(key, value as string);
+        }
+      });
+    }
 
     const url = new URL(path, this.apiRoot);
     if (params && method === "GET") {
@@ -303,7 +314,7 @@ class LoopsClient {
     try {
       const response = await fetch(url.href, {
         method,
-        headers,
+        headers: h,
         body: payload ? JSON.stringify(payload) : undefined,
       });
 
@@ -525,6 +536,7 @@ class LoopsClient {
    * @param {Object} [params.contactProperties] Properties to update the contact with, including custom properties.
    * @param {Object} [params.eventProperties] Event properties, made available in emails triggered by the event.
    * @param {Object} [params.mailingLists] An object of mailing list IDs and boolean subscription statuses.
+   * @param {Object} [params.headers] Additional headers to send with the request.
    *
    * @see https://loops.so/docs/api-reference/send-event
    *
@@ -537,6 +549,7 @@ class LoopsClient {
     contactProperties,
     eventProperties,
     mailingLists,
+    headers,
   }: {
     email?: string;
     userId?: string;
@@ -544,6 +557,7 @@ class LoopsClient {
     contactProperties?: ContactProperties;
     eventProperties?: EventProperties;
     mailingLists?: MailingLists;
+    headers?: Record<string, string>;
   }): Promise<EventSuccessResponse> {
     if (!userId && !email)
       throw new ValidationError(
@@ -566,6 +580,7 @@ class LoopsClient {
     return this._makeQuery({
       path: "v1/events/send",
       method: "POST",
+      headers,
       payload,
     });
   }
@@ -579,6 +594,7 @@ class LoopsClient {
    * @param {boolean} [params.addToAudience] Create a contact in your audience using the provided email address (if one doesn't already exist).
    * @param {Object} [params.dataVariables] Data variables as defined by the transational email template.
    * @param {Object[]} [params.attachments] File(s) to be sent along with the email message.
+   * @param {Object} [params.headers] Additional headers to send with the request.
    *
    * @see https://loops.so/docs/api-reference/send-transactional-email
    *
@@ -590,12 +606,14 @@ class LoopsClient {
     addToAudience,
     dataVariables,
     attachments,
+    headers,
   }: {
     transactionalId: string;
     email: string;
     addToAudience?: boolean;
     dataVariables?: TransactionalVariables;
     attachments?: Array<TransactionalAttachment>;
+    headers?: Record<string, string>;
   }): Promise<TransactionalSuccess> {
     const payload = {
       transactionalId,
@@ -607,6 +625,7 @@ class LoopsClient {
     return this._makeQuery({
       path: "v1/transactional",
       method: "POST",
+      headers,
       payload,
     });
   }

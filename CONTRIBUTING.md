@@ -13,7 +13,7 @@ Thank you for your interest in contributing to Loops JS SDK. We welcome contribu
 1. Make your changes in your branch.
 2. Follow the coding style and conventions used in the project.
 3. Write clear, concise commit messages.
-4. Test your changes thoroughly.
+4. Test your changes thoroughly. Write or modify existing tests when it makes sense.
 
 ## Submitting a Pull Request
 

@@ -567,6 +567,15 @@ const resp = await loops.sendEvent({
     plan: "pro",
   },
 });
+
+// Example with Idempotency-Key header
+const resp = await loops.sendEvent({
+  email: "hello@gmail.com",
+  eventName: "signup",
+  headers: {
+    "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000",
+  },
+});
 ```
 
 #### Response
@@ -616,6 +625,18 @@ const resp = await loops.sendTransactionalEmail({
   email: "hello@gmail.com",
   dataVariables: {
     loginUrl: "https://myapp.com/login/",
+  },
+});
+
+// Example with Idempotency-Key header
+const resp = await loops.sendTransactionalEmail({
+  transactionalId: "clfq6dinn000yl70fgwwyp82l",
+  email: "hello@gmail.com",
+  dataVariables: {
+    loginUrl: "https://myapp.com/login/",
+  },
+  headers: {
+    "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000",
   },
 });
 
@@ -733,6 +754,7 @@ const resp = await loops.getTransactionalEmails({ perPage: 15 });
 
 ## Version history
 
+- `v5.0.1` (May 13, 2025) - Added a `headers` parameter for [`sendEvent()`](#sendevent) and [`sendTransactionalEmail()`](#sendtransactionalemail), enabling support for the `Idempotency-Key` header.
 - `v5.0.0` (Apr 29, 2025)
   - Types are now exported so you can use them in your application.
   - `ValidationError` is now thrown when paramters are not added correctly.
@@ -767,6 +789,12 @@ const resp = await loops.getTransactionalEmails({ perPage: 15 });
 - `v0.1.3` (Dec 8, 2023) - Added support for transactional attachments.
 - `v0.1.2` (Dec 6, 2023) - Improved transactional error types.
 - `v0.1.1` (Nov 1, 2023) - Initial release.
+
+---
+
+## Tests
+
+Run tests with `npm run test`.
 
 ---
 
