@@ -1,7 +1,5 @@
 # Loops JavaScript/TypeScript SDK
 
-[![](https://img.shields.io/npm/dt/loops?style=social&label=Downloads)](https://www.npmjs.com/package/loops)
-
 ## Introduction
 
 This is the official JavaScript SDK for [Loops](https://loops.so), with full TypeScript support.
@@ -531,6 +529,7 @@ Send an event to trigger an email in Loops. [Read more about events](https://loo
 | `contactProperties` | object | No       | An object containing contact properties, which will be updated or added to the contact when the event is received.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `null` (to reset a value), `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 | `eventProperties`   | object | No       | An object containing event properties, which will be made available in emails that are triggered by this event.<br />Values can be of type `string`, `number`, `boolean` or `date` ([see allowed date formats](https://loops.so/docs/events/properties#important-information-about-event-properties)).                                                                                                                                                         |
 | `mailingLists`      | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                                                               |
+| `headers`           | object | No       | Additional headers to send with the request.                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 #### Examples
 
@@ -616,6 +615,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 | `attachments[].filename`    | string   | No       | The name of the file, shown in email clients.                                                                                                                                                    |
 | `attachments[].contentType` | string   | No       | The MIME type of the file.                                                                                                                                                                       |
 | `attachments[].data`        | string   | No       | The base64-encoded content of the file.                                                                                                                                                          |
+| `headers`                   | object   | No       | Additional headers to send with the request.                                                                                                                                                     |
 
 #### Examples
 
@@ -757,7 +757,7 @@ const resp = await loops.getTransactionalEmails({ perPage: 15 });
 - `v5.0.1` (May 13, 2025) - Added a `headers` parameter for [`sendEvent()`](#sendevent) and [`sendTransactionalEmail()`](#sendtransactionalemail), enabling support for the `Idempotency-Key` header.
 - `v5.0.0` (Apr 29, 2025)
   - Types are now exported so you can use them in your application.
-  - `ValidationError` is now thrown when paramters are not added correctly.
+  - `ValidationError` is now thrown when parameters are not added correctly.
   - `Error` is now returned if the API key is missing.
   - Added tests.
 - `v4.1.0` (Feb 27, 2025) - Support for new [List transactional emails](#gettransactionalemails) endpoint.
