@@ -1,49 +1,32 @@
-# Loops JavaScript/TypeScript SDK
+# Unofficial Loops Python SDK
 
 ## Introduction
 
-This is the official JavaScript SDK for [Loops](https://loops.so), with full TypeScript support.
-
-It lets you easily integrate with the Loops API in any JavaScript project.
+Python SDK for [Loops](https://loops.so), with both sync and async clients. Mirrors the public JS SDK where it makes sense.
 
 ## Installation
 
-You can install the package [from npm](https://www.npmjs.com/package/loops):
-
 ```bash
-npm install loops
+pip install loops-python-unofficial
 ```
 
-Minimum Node version required: 18.0.0.
+You will need a Loops API key from your account settings.
 
-You will need a Loops API key to use the package.
+## Quick start
 
-In your Loops account, go to the [API Settings page](https://app.loops.so/settings?page=api) and click "Generate key".
+### Sync
 
-Copy this key and save it in your application code (for example as `LOOPS_API_KEY` in an `.env` file).
+```python
+from loops_unofficial import LoopsClient, APIError, RateLimitExceededError
 
-See the API documentation to learn more about [rate limiting](https://loops.so/docs/api-reference#rate-limiting) and [error handling](https://loops.so/docs/api-reference#debugging).
+client = LoopsClient("<YOUR_API_KEY>")
 
-## Usage
-
-```javascript
-import { LoopsClient, APIError } from "loops";
-
-const loops = new LoopsClient(process.env.LOOPS_API_KEY);
-
-try {
-  const resp = await loops.createContact("email@provider.com");
-  // resp.success and resp.id available when successful
-} catch (error) {
-  if (error instanceof APIError) {
-    // JSON returned by the API is in error.json and the HTTP code is in error.statusCode
-    // Error messages explaining the issue can be found in error.json.message
-    console.log(error.json);
-    console.log(error.statusCode);
-  } else {
-    // Non-API errors
-  }
-}
+try:
+    resp = client.create_contact("email@provider.com")
+except RateLimitExceededError as e:
+    print(f"Rate limit exceeded ({e.limit}/s), remaining={e.remaining}")
+except APIError as e:
+    print(e.status_code, e.json)
 ```
 
 ## Handling rate limits
@@ -52,21 +35,20 @@ If you import `RateLimitExceededError` you can check for rate limit issues with 
 
 You can access details about the rate limits from the `limit` and `remaining` attributes.
 
-```javascript
-import { LoopsClient, APIError, RateLimitExceededError } from "loops";
+### Async
 
-const loops = new LoopsClient(process.env.LOOPS_API_KEY);
+```python
+import asyncio
+from loops_unofficial import AsyncLoopsClient
 
-try {
-  const resp = await loops.createContact("email@provider.com");
-} catch (error) {
-  if (error instanceof RateLimitExceededError) {
-    console.log(`Rate limit exceeded (${error.limit} per second)`);
-    // Code here to re-try this request
-  } else {
-    // Handle other errors
-  }
-}
+async def main():
+    client = AsyncLoopsClient("<YOUR_API_KEY>")
+    try:
+        resp = await client.create_contact("email@provider.com")
+    finally:
+        await client.aclose()
+
+asyncio.run(main())
 ```
 
 ## Default contact properties
@@ -88,17 +70,17 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 
 ## Methods
 
-- [testApiKey()](#testapikey)
-- [createContact()](#createcontact)
-- [updateContact()](#updatecontact)
-- [findContact()](#findcontact)
-- [deleteContact()](#deletecontact)
-- [createContactProperty()](#createcontactproperty)
-- [getContactProperties()](#getcontactproperties)
-- [getMailingLists()](#getmailinglists)
-- [sendEvent()](#sendevent)
-- [sendTransactionalEmail()](#sendtransactionalemail)
-- [getTransactionalEmails()](#gettransactionalemails)
+- test_api_key()
+- create_contact(email, properties=None, mailing_lists=None)
+- update_contact(email, properties, mailing_lists=None)
+- find_contact(email=None, user_id=None)
+- delete_contact(email=None, user_id=None)
+- create*contact_property(name, type*)
+- get*contact_properties(list*=None)
+- get_mailing_lists()
+- send_event(email=None, user_id=None, event_name=..., contact_properties=None, event_properties=None, mailing_lists=None, headers=None)
+- send_transactional_email(transactional_id, email, add_to_audience=None, data_variables=None, attachments=None, headers=None)
+- get_transactional_emails(per_page=None, cursor=None)
 
 ---
 
@@ -112,10 +94,13 @@ Test that an API key is valid.
 
 None
 
-#### Example
+#### Example (Python)
 
-```javascript
-const resp = await loops.testApiKey();
+```python
+from loops_unofficial import LoopsClient
+
+client = LoopsClient("<API_KEY>")
+resp = client.test_api_key()
 ```
 
 #### Response
@@ -152,24 +137,20 @@ Create a new contact.
 | `properties`   | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `null` (to reset a value), `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 | `mailingLists` | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                     |
 
-#### Examples
+#### Examples (Python)
 
-```javascript
-const resp = await loops.createContact("hello@gmail.com");
+```python
+from loops_unofficial import LoopsClient
 
-const contactProperties = {
-  firstName: "Bob" /* Default property */,
-  favoriteColor: "Red" /* Custom property */,
-};
-const mailingLists = {
-  cm06f5v0e45nf0ml5754o9cix: true,
-  cm16k73gq014h0mmj5b6jdi9r: false,
-};
-const resp = await loops.createContact(
-  "hello@gmail.com",
-  contactProperties,
-  mailingLists
-);
+client = LoopsClient("<API_KEY>")
+
+# Minimal
+resp = client.create_contact("hello@gmail.com")
+
+# With properties and mailing lists
+contact_properties = {"firstName": "Bob", "favoriteColor": "Red"}
+mailing_lists = {"cm06f5v0e45nf0ml5754o9cix": True, "cm16k73gq014h0mmj5b6jdi9r": False}
+resp = client.create_contact("hello@gmail.com", contact_properties, mailing_lists)
 ```
 
 #### Response
@@ -209,19 +190,13 @@ Note: To update a contact's email address, the contact requires a `userId` value
 | `properties`   | object | No       | An object containing default and any custom properties for your contact.<br />Please [add custom properties](https://loops.so/docs/contacts/properties#custom-contact-properties) in your Loops account before using them with the SDK.<br />Values can be of type `string`, `number`, `null` (to reset a value), `boolean` or `date` ([see allowed date formats](https://loops.so/docs/contacts/properties#dates)). |
 | `mailingLists` | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                     |
 
-#### Example
+#### Example (Python)
 
-```javascript
-const contactProperties = {
-  firstName: "Bob" /* Default property */,
-  favoriteColor: "Blue" /* Custom property */,
-};
-const resp = await loops.updateContact("hello@gmail.com", contactProperties);
+```python
+client.update_contact("hello@gmail.com", {"firstName": "Bob", "favoriteColor": "Blue"})
 
-/* Updating a contact's email address using userId */
-const resp = await loops.updateContact("newemail@gmail.com", {
-  userId: "1234",
-});
+# Updating a contact's email address using userId
+client.update_contact("newemail@gmail.com", {"userId": "1234"})
 ```
 
 #### Response
@@ -260,12 +235,11 @@ You must use one parameter in the request.
 | `email`  | string | No       |       |
 | `userId` | string | No       |       |
 
-#### Examples
+#### Examples (Python)
 
-```javascript
-const resp = await loops.findContact({ email: "hello@gmail.com" });
-
-const resp = await loops.findContact({ userId: "12345" });
+```python
+client.find_contact(email="hello@gmail.com")
+client.find_contact(user_id="12345")
 ```
 
 #### Response
@@ -310,12 +284,11 @@ You must use one parameter in the request.
 | `email`  | string | No       |       |
 | `userId` | string | No       |       |
 
-#### Example
+#### Example (Python)
 
-```javascript
-const resp = await loops.deleteContact({ email: "hello@gmail.com" });
-
-const resp = await loops.deleteContact({ userId: "12345" });
+```python
+client.delete_contact(email="hello@gmail.com")
+client.delete_contact(user_id="12345")
 ```
 
 #### Response
@@ -360,10 +333,10 @@ Create a new contact property.
 | `name` | string | Yes      | The name of the property. Should be in camelCase, like `planName` or `favouriteColor`. |
 | `type` | string | Yes      | The property's value type.<br />Can be one of `string`, `number`, `boolean` or `date`. |
 
-#### Examples
+#### Examples (Python)
 
-```javascript
-const resp = await loops.createContactProperty("planName", "string");
+```python
+client.create_contact_property("planName", "string")
 ```
 
 #### Response
@@ -398,12 +371,11 @@ Get a list of your account's contact properties.
 | ------ | ------ | -------- | --------------------------------------------------------------- |
 | `list` | string | No       | Use "custom" to retrieve only your account's custom properties. |
 
-#### Example
+#### Example (Python)
 
-```javascript
-const resp = await loops.getContactProperties();
-
-const resp = await loops.getContactProperties("custom");
+```python
+client.get_contact_properties()
+client.get_contact_properties("custom")
 ```
 
 #### Response
@@ -482,10 +454,10 @@ Get a list of your account's mailing lists. [Read more about mailing lists](http
 
 None
 
-#### Example
+#### Example (Python)
 
-```javascript
-const resp = await loops.getMailingLists();
+```python
+client.get_mailing_lists()
 ```
 
 #### Response
@@ -531,50 +503,34 @@ Send an event to trigger an email in Loops. [Read more about events](https://loo
 | `mailingLists`      | object | No       | An object of mailing list IDs and boolean subscription statuses.                                                                                                                                                                                                                                                                                                                                                                                               |
 | `headers`           | object | No       | Additional headers to send with the request.                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-#### Examples
+#### Examples (Python)
 
-```javascript
-const resp = await loops.sendEvent({
-  email: "hello@gmail.com",
-  eventName: "signup",
-});
+```python
+# Minimal
+client.send_event(email="hello@gmail.com", event_name="signup")
 
-const resp = await loops.sendEvent({
-  email: "hello@gmail.com",
-  eventName: "signup",
-  eventProperties: {
-    username: "user1234",
-    signupDate: "2024-03-21T10:09:23Z",
-  },
-  mailingLists: {
-    cm06f5v0e45nf0ml5754o9cix: true,
-    cm16k73gq014h0mmj5b6jdi9r: false,
-  },
-});
+# With event properties and mailing lists
+client.send_event(
+    email="hello@gmail.com",
+    event_name="signup",
+    event_properties={"username": "user1234", "signupDate": "2024-03-21T10:09:23Z"},
+    mailing_lists={"cm06f5v0e45nf0ml5754o9cix": True, "cm16k73gq014h0mmj5b6jdi9r": False},
+)
 
-// In this case with both email and userId present, the system will look for a contact with either a
-//  matching `email` or `userId` value.
-// If a contact is found for one of the values (e.g. `email`), the other value (e.g. `userId`) will be updated.
-// If a contact is not found, a new contact will be created using both `email` and `userId` values.
-// Any values added in `contactProperties` will also be updated on the contact.
-const resp = await loops.sendEvent({
-  userId: "1234567890",
-  email: "hello@gmail.com",
-  eventName: "signup",
-  contactProperties: {
-    firstName: "Bob",
-    plan: "pro",
-  },
-});
+# With both email and userId and contact properties
+client.send_event(
+    user_id="1234567890",
+    email="hello@gmail.com",
+    event_name="signup",
+    contact_properties={"firstName": "Bob", "plan": "pro"},
+)
 
-// Example with Idempotency-Key header
-const resp = await loops.sendEvent({
-  email: "hello@gmail.com",
-  eventName: "signup",
-  headers: {
-    "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000",
-  },
-});
+# With Idempotency-Key header
+client.send_event(
+    email="hello@gmail.com",
+    event_name="signup",
+    headers={"Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000"},
+)
 ```
 
 #### Response
@@ -617,44 +573,37 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 | `attachments[].data`        | string   | No       | The base64-encoded content of the file.                                                                                                                                                          |
 | `headers`                   | object   | No       | Additional headers to send with the request.                                                                                                                                                     |
 
-#### Examples
+#### Examples (Python)
 
-```javascript
-const resp = await loops.sendTransactionalEmail({
-  transactionalId: "clfq6dinn000yl70fgwwyp82l",
-  email: "hello@gmail.com",
-  dataVariables: {
-    loginUrl: "https://myapp.com/login/",
-  },
-});
+```python
+# Minimal
+client.send_transactional_email(
+    transactional_id="clfq6dinn000yl70fgwwyp82l",
+    email="hello@gmail.com",
+    data_variables={"loginUrl": "https://myapp.com/login/"},
+)
 
-// Example with Idempotency-Key header
-const resp = await loops.sendTransactionalEmail({
-  transactionalId: "clfq6dinn000yl70fgwwyp82l",
-  email: "hello@gmail.com",
-  dataVariables: {
-    loginUrl: "https://myapp.com/login/",
-  },
-  headers: {
-    "Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000",
-  },
-});
+# With Idempotency-Key header
+client.send_transactional_email(
+    transactional_id="clfq6dinn000yl70fgwwyp82l",
+    email="hello@gmail.com",
+    data_variables={"loginUrl": "https://myapp.com/login/"},
+    headers={"Idempotency-Key": "550e8400-e29b-41d4-a716-446655440000"},
+)
 
-// Please contact us to enable attachments on your account.
-const resp = await loops.sendTransactionalEmail({
-  transactionalId: "clfq6dinn000yl70fgwwyp82l",
-  email: "hello@gmail.com",
-  dataVariables: {
-    loginUrl: "https://myapp.com/login/",
-  },
-  attachments: [
-    {
-      filename: "presentation.pdf",
-      contentType: "application/pdf",
-      data: "JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPD...",
-    },
-  ],
-});
+# With attachments (requires attachments to be enabled on your account)
+client.send_transactional_email(
+    transactional_id="clfq6dinn000yl70fgwwyp82l",
+    email="hello@gmail.com",
+    data_variables={"loginUrl": "https://myapp.com/login/"},
+    attachments=[
+        {
+            "filename": "presentation.pdf",
+            "contentType": "application/pdf",
+            "data": "JVBERi0xLjMKJcTl8uXrp/Og0MTGCjQgMCBvYmoKPD...",
+        }
+    ],
+)
 ```
 
 #### Response
@@ -703,12 +652,11 @@ Get a list of published transactional emails.
 | `perPage` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
 | `cursor`  | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
 
-#### Example
+#### Example (Python)
 
-```javascript
-const resp = await loops.getTransactionalEmails();
-
-const resp = await loops.getTransactionalEmails({ perPage: 15 });
+```python
+client.get_transactional_emails()
+client.get_transactional_emails(per_page=15)
 ```
 
 #### Response
@@ -792,9 +740,43 @@ const resp = await loops.getTransactionalEmails({ perPage: 15 });
 
 ---
 
-## Tests
+## Development
 
-Run tests with `npm run test`.
+This project uses `uv`.
+
+```bash
+uv sync
+uv run pytest
+uv run ruff check
+uv run mypy .
+```
+
+## Publishing
+
+Use GitHub Actions with PyPI Trusted Publishing.
+
+Workflow:
+
+- Tag a release locally: `git tag v0.2.0 && git push --tags`.
+- The workflow `.github/workflows/release.yml` builds and publishes to PyPI on tag push using [PyPA’s official action](https://github.com/marketplace/actions/pypi-publish).
+- To publish to TestPyPI manually, trigger the workflow (Run workflow) and choose `testpypi`.
+
+### Installing from TestPyPI
+
+If you published to TestPyPI, install with an explicit index URL:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple \
+            loops-python-unofficial
+```
+
+### Releasing
+
+1. Update version in `pyproject.toml`.
+2. Create a tag: `git tag vX.Y.Z && git push --tags`.
+3. Workflow builds with `uv build` and publishes via trusted publishing.
+4. Alternatively dispatch the workflow and select `testpypi` to publish to TestPyPI.
 
 ---
 

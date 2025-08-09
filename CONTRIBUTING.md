@@ -1,11 +1,11 @@
-# Contributing to Loops JS SDK
+# Contributing to Loops Python SDK
 
 Thank you for your interest in contributing to Loops JS SDK. We welcome contributions from the community and are excited to see what you'll bring to the project.
 
 ## Getting Started
 
 1. Fork the repository on GitHub.
-2. Clone your fork locally: `git clone <https://github.com/Loops-so/loops-js.git`>
+2. Clone your fork locally: `git clone https://github.com/VersionLens/loops-python-unofficial.git`
 3. Create a new branch for your feature or bug fix: `git checkout -b your-branch-name`
 
 ## Making Changes
@@ -13,7 +13,7 @@ Thank you for your interest in contributing to Loops JS SDK. We welcome contribu
 1. Make your changes in your branch.
 2. Follow the coding style and conventions used in the project.
 3. Write clear, concise commit messages.
-4. Test your changes thoroughly. Write or modify existing tests when it makes sense.
+4. Test your changes thoroughly. Add or update tests where it makes sense.
 
 ## Submitting a Pull Request
 
@@ -44,8 +44,15 @@ We welcome suggestions for enhancements! Please open an issue on GitHub with:
 - A detailed description of the proposed enhancement
 - Any examples or mock-ups if applicable
 
-## Questions?
+## Local development
 
-If you have any questions, feel free to open an issue or contact the maintainers directly.
+This project uses `uv` for dependency management.
+
+```
+uv sync
+uv run pytest
+uv run ruff check
+uv run mypy .
+```
 
 Thank you for contributing!
